@@ -11,7 +11,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from lg.models import LogEntry
+from nfo.models import LogEntry
 
 _COLUMNS = [
     "timestamp",

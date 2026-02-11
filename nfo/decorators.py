@@ -8,7 +8,7 @@ import time
 import traceback as tb_mod
 from typing import Any, Callable, Optional, TypeVar, overload
 
-from lg.models import LogEntry
+from nfo.models import LogEntry
 
 F = TypeVar("F", bound=Callable[..., Any])
 
@@ -16,13 +16,13 @@ F = TypeVar("F", bound=Callable[..., Any])
 # Module-level default logger (lazy-initialised)
 # ---------------------------------------------------------------------------
 
-_default_logger: Optional[Any] = None  # lg.logger.Logger
+_default_logger: Optional[Any] = None  # nfo.logger.Logger
 
 
 def _get_default_logger() -> Any:
     global _default_logger
     if _default_logger is None:
-        from lg.logger import Logger
+        from nfo.logger import Logger
         _default_logger = Logger()
     return _default_logger
 

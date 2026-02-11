@@ -1,3 +1,33 @@
+## [0.1.11] - 2026-02-11
+
+### Summary
+
+refactor(tests): CLI interface with 3 supporting modules
+
+### Test
+
+- update tests/test_decorators.py
+- update tests/test_sinks.py
+
+### Build
+
+- update pyproject.toml
+
+### Config
+
+- config: update goal.yaml
+
+### Other
+
+- update lg/__init__.py
+- update nfo/__init__.py
+- update nfo/decorators.py
+- update nfo/logger.py
+- update nfo/models.py
+- update nfo/py.typed
+- update nfo/sinks.py
+
+
 ## [0.1.10] - 2026-02-11
 
 ### Summary

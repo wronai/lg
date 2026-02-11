@@ -1,4 +1,4 @@
-"""Tests for lg.sinks (SQLite, CSV, Markdown)."""
+"""Tests for nfo.sinks (SQLite, CSV, Markdown)."""
 
 import csv
 import os
@@ -7,8 +7,8 @@ import tempfile
 
 import pytest
 
-from lg.models import LogEntry
-from lg.sinks import SQLiteSink, CSVSink, MarkdownSink
+from nfo.models import LogEntry
+from nfo.sinks import SQLiteSink, CSVSink, MarkdownSink
 
 
 def _make_entry(**overrides) -> LogEntry:

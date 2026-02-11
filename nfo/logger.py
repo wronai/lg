@@ -6,8 +6,8 @@ import logging
 import sys
 from typing import List, Optional
 
-from lg.models import LogEntry
-from lg.sinks import Sink
+from nfo.models import LogEntry
+from nfo.sinks import Sink
 
 
 class Logger:
@@ -21,7 +21,7 @@ class Logger:
 
     def __init__(
         self,
-        name: str = "lg",
+        name: str = "nfo",
         level: str = "DEBUG",
         sinks: Optional[List[Sink]] = None,
         propagate_stdlib: bool = True,

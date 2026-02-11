@@ -1,11 +1,11 @@
-"""Tests for lg.decorators."""
+"""Tests for nfo.decorators."""
 
 import pytest
 
-from lg import log_call, catch, Logger
-from lg.decorators import set_default_logger
-from lg.models import LogEntry
-from lg.sinks import Sink
+from nfo import log_call, catch, Logger
+from nfo.decorators import set_default_logger
+from nfo.models import LogEntry
+from nfo.sinks import Sink
 
 
 class MemorySink(Sink):
@@ -59,9 +59,9 @@ class TestLogCall:
         def greet(name="world"):
             return f"hello {name}"
 
-        greet(name="lg")
+        greet(name="nfo")
         entry = sink.entries[0]
-        assert entry.kwargs == {"name": "lg"}
+        assert entry.kwargs == {"name": "nfo"}
         assert entry.kwarg_types == {"name": "str"}
 
     def test_logs_exception(self, logger):
