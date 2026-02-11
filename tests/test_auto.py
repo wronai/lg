@@ -197,3 +197,66 @@ class TestAutoLog:
         count = auto_log(mod)
         assert count == 1  # only fn, not MyClass
         lgr.close()
+
+
+class TestAutoLogByName:
+
+    def test_patches_by_module_name(self):
+        from nfo.auto import auto_log_by_name
+        import sys
+
+        sink = MemorySink()
+        lgr = Logger(name="test-byname1", sinks=[sink], propagate_stdlib=False)
+        set_default_logger(lgr)
+
+        def greet(name):
+            return f"hello {name}"
+
+        mod = _make_module("test_byname_mod1", greet=greet)
+        sys.modules["test_byname_mod1"] = mod
+
+        count = auto_log_by_name("test_byname_mod1")
+        assert count == 1
+
+        mod.greet("world")
+        assert len(sink.entries) == 1
+        assert sink.entries[0].return_value == "hello world"
+
+        del sys.modules["test_byname_mod1"]
+        lgr.close()
+
+    def test_skips_missing_modules(self):
+        from nfo.auto import auto_log_by_name
+
+        count = auto_log_by_name("nonexistent.module.xyz123")
+        assert count == 0
+
+    def test_multiple_modules_by_name(self):
+        from nfo.auto import auto_log_by_name
+        import sys
+
+        sink = MemorySink()
+        lgr = Logger(name="test-byname2", sinks=[sink], propagate_stdlib=False)
+        set_default_logger(lgr)
+
+        def fn_a():
+            return "a"
+
+        def fn_b():
+            return "b"
+
+        mod_a = _make_module("test_byname_a", fn_a=fn_a)
+        mod_b = _make_module("test_byname_b", fn_b=fn_b)
+        sys.modules["test_byname_a"] = mod_a
+        sys.modules["test_byname_b"] = mod_b
+
+        count = auto_log_by_name("test_byname_a", "test_byname_b")
+        assert count == 2
+
+        mod_a.fn_a()
+        mod_b.fn_b()
+        assert len(sink.entries) == 2
+
+        del sys.modules["test_byname_a"]
+        del sys.modules["test_byname_b"]
+        lgr.close()

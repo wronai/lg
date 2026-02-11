@@ -42,12 +42,63 @@ Output (stderr):
 
 - **`@log_call`** — logs entry/exit, args with types, return value, exceptions + traceback, duration
 - **`@catch`** — like `@log_call` but suppresses exceptions (returns configurable default)
-- **`SQLiteSink`** — persist logs to SQLite database
-- **`CSVSink`** — append logs to CSV file
-- **`MarkdownSink`** — write human-readable Markdown log files
-- **`Logger`** — central dispatcher with multiple sinks + optional stdlib `logging` forwarding
-- **Zero dependencies** — uses only Python standard library
+- **`@logged`** — class decorator: auto-wraps all public methods
+- **`auto_log()`** — one call to log ALL functions in a module (no individual decorators needed)
+- **`configure()`** — one-liner project setup with sink specs, stdlib bridge, LLM, env tagging
+- **`LLMSink`** — LLM-powered root-cause analysis via litellm (OpenAI, Anthropic, Ollama)
+- **`EnvTagger`** — auto-tag logs with environment/trace_id/version (K8s, Docker, CI)
+- **`DynamicRouter`** — route logs to different sinks by env/level/custom rules
+- **`DiffTracker`** — detect output changes between function versions
+- **`detect_prompt_injection()`** — scan args for prompt injection patterns
+- **`SQLiteSink`** / **`CSVSink`** / **`MarkdownSink`** — persist logs to SQLite, CSV, Markdown
+- **Zero dependencies** — core uses only Python stdlib; LLM features via `pip install nfo[llm]`
 - **Thread-safe** — all sinks use locks
+
+## `auto_log()` — Log Everything, Zero Decorators
+
+**One call** wraps all functions in a module with automatic logging. No need to decorate each function individually:
+
+```python
+# myapp/core.py
+def create_user(name: str) -> dict:
+    return {"name": name}
+
+def delete_user(user_id: int) -> bool:
+    return True
+
+def _internal():  # skipped (private)
+    pass
+
+# One line at the bottom — all public functions are now logged:
+import nfo
+nfo.auto_log()
+```
+
+With exception catching (all functions become safe):
+```python
+nfo.auto_log(catch_exceptions=True, default=None)
+# Every function now catches exceptions and returns None instead of crashing
+```
+
+Patch specific modules from your entry point:
+```python
+# main.py
+import nfo
+import myapp.api
+import myapp.core
+import myapp.models
+
+nfo.configure(sinks=["sqlite:logs.db"])
+nfo.auto_log(myapp.api, myapp.core, myapp.models, level="INFO")
+# All public functions in 3 modules are now logged to SQLite
+```
+
+Use `@nfo.skip` to exclude specific functions:
+```python
+@nfo.skip
+def health_check():  # excluded from auto_log
+    return "ok"
+```
 
 ## Sinks
 
@@ -124,30 +175,52 @@ pip install nfo
 
 ```python
 # myproject/nfo_config.py
-from nfo import configure
+from __future__ import annotations
+import os, tempfile
+from pathlib import Path
 
-_logger = None
+_initialized = False
+
+# Modules to auto-instrument (all public functions get @log_call automatically)
+_AUTO_LOG_MODULES = [
+    "myproject.api",
+    "myproject.core",
+    "myproject.models",
+]
 
 def setup_logging():
-    global _logger
-    if _logger is not None:
+    global _initialized
+    if _initialized:
         return
-    _logger = configure(
+    try:
+        from nfo import configure, auto_log_by_name
+    except ImportError:
+        return
+
+    log_dir = os.environ.get("LOG_DIR", str(Path(tempfile.gettempdir()) / "myproject-logs"))
+    Path(log_dir).mkdir(parents=True, exist_ok=True)
+
+    configure(
         name="myproject",
-        sinks=["sqlite:/tmp/myproject-logs/app.db"],
+        sinks=[f"sqlite:{log_dir}/app.db"],
         modules=["myproject.api", "myproject.core"],  # bridge stdlib loggers
+        environment=os.environ.get("APP_ENV"),         # auto-tag env
     )
+    auto_log_by_name(*_AUTO_LOG_MODULES)  # instrument all public functions
+    _initialized = True
 ```
 
-### Step 3: Call at entry point
+### Step 3: Call at entry point (AFTER imports)
 
 ```python
 # myproject/main.py
+from myproject import api, core, models  # import modules first
+
 from myproject.nfo_config import setup_logging
-setup_logging()
+setup_logging()  # now auto_log_by_name finds them in sys.modules
 ```
 
-Done. All `logging.getLogger(__name__)` calls in bridged modules now write to SQLite automatically.
+Done. Every public function in listed modules is now auto-logged to SQLite — args, return values, exceptions, duration — with zero decorators.
 
 ## `configure()` — One-liner Setup
 
@@ -323,6 +396,37 @@ Each `@log_call` / `@catch` captures:
 | `trace_id` | Correlation ID for distributed tracing |
 | `version` | App version / git SHA |
 | `llm_analysis` | LLM root-cause analysis (if LLMSink enabled) |
+
+## Comparison with Other Libraries
+
+| Feature | **nfo** | loguru | structlog | stdlib logging |
+|---|:---:|:---:|:---:|:---:|
+| Auto-log all functions (`auto_log()`) | ✅ | ❌ | ❌ | ❌ |
+| Class decorator (`@logged`) | ✅ | ❌ | ❌ | ❌ |
+| One-liner project setup (`configure()`) | ✅ | ⚠️ partial | ⚠️ partial | ❌ |
+| Capture args/kwargs/types automatically | ✅ | ❌ | ❌ | ❌ |
+| Capture return value + type | ✅ | ❌ | ❌ | ❌ |
+| Capture duration per call | ✅ | ❌ | ❌ | ❌ |
+| Exception catch + continue (`@catch`) | ✅ | ⚠️ `@logger.catch` | ❌ | ❌ |
+| SQLite sink (queryable logs) | ✅ | ❌ | ❌ | ❌ |
+| CSV sink | ✅ | ❌ | ❌ | ❌ |
+| Markdown sink | ✅ | ❌ | ❌ | ❌ |
+| LLM-powered log analysis | ✅ litellm | ❌ | ❌ | ❌ |
+| Prompt injection detection | ✅ | ❌ | ❌ | ❌ |
+| Multi-env correlation (K8s/Docker/CI) | ✅ auto-detect | ❌ | ⚠️ manual | ❌ |
+| Dynamic sink routing by env/level | ✅ | ❌ | ❌ | ⚠️ filters |
+| Version diff tracking | ✅ | ❌ | ❌ | ❌ |
+| Bridge stdlib loggers | ✅ | ⚠️ intercept | ✅ | N/A |
+| Structured output | ✅ dataclass | ⚠️ string | ✅ dict | ❌ |
+| Zero dependencies (core) | ✅ | ❌ | ❌ | ✅ |
+| Composable sink pipeline | ✅ | ❌ | ✅ processors | ❌ |
+
+**Key differences:**
+
+- **loguru** — great for human-readable console output, but no auto-function-logging, no structured sinks (SQLite/CSV), no LLM integration
+- **structlog** — excellent for structured key-value logs, but requires manual `log.info("msg", key=val)` calls everywhere; no auto-capture of args/return/duration
+- **stdlib logging** — ubiquitous but verbose config, no auto-function-logging, no structured sinks
+- **nfo** — the only library that auto-captures function signatures, args, return values, and exceptions with zero boilerplate (`auto_log()` or `@logged`), writes to queryable sinks, and integrates LLM analysis
 
 ## Examples
 

@@ -11,7 +11,7 @@ from nfo.configure import configure
 from nfo.logged import logged, skip
 from nfo.env import EnvTagger, DynamicRouter, DiffTracker
 from nfo.llm import LLMSink, detect_prompt_injection, scan_entry_for_injection
-from nfo.auto import auto_log
+from nfo.auto import auto_log, auto_log_by_name
 
 __version__ = "0.1.9"
 
@@ -32,4 +32,5 @@ __all__ = [
     "detect_prompt_injection",
     "scan_entry_for_injection",
     "auto_log",
+    "auto_log_by_name",
 ]

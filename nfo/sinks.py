@@ -28,6 +28,10 @@ _COLUMNS = [
     "exception_type",
     "traceback",
     "duration_ms",
+    "environment",
+    "trace_id",
+    "version",
+    "llm_analysis",
 ]
 
 
@@ -83,7 +87,11 @@ class SQLiteSink(Sink):
                 "  exception TEXT,"
                 "  exception_type TEXT,"
                 "  traceback TEXT,"
-                "  duration_ms REAL"
+                "  duration_ms REAL,"
+                "  environment TEXT,"
+                "  trace_id TEXT,"
+                "  version TEXT,"
+                "  llm_analysis TEXT"
                 ")"
             )
             conn.commit()
@@ -171,6 +179,14 @@ class MarkdownSink(Sink):
         if d["exception"]:
             lines.append(f"- **Exception:** `{d['exception_type']}`: {d['exception']}")
             lines.append(f"\n```\n{d['traceback']}\n```")
+        if d.get("environment"):
+            lines.append(f"- **Environment:** {d['environment']}")
+        if d.get("trace_id"):
+            lines.append(f"- **Trace ID:** `{d['trace_id']}`")
+        if d.get("version"):
+            lines.append(f"- **Version:** {d['version']}")
+        if d.get("llm_analysis"):
+            lines.append(f"- **LLM Analysis:** {d['llm_analysis']}")
         lines.append("\n---\n")
 
         with self._lock:

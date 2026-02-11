@@ -128,3 +128,57 @@ def auto_log(
             count += 1
 
     return count
+
+
+def auto_log_by_name(
+    *module_names: str,
+    level: str = "DEBUG",
+    catch_exceptions: bool = False,
+    default: Any = None,
+    include_private: bool = False,
+    logger: Any = None,
+) -> int:
+    """
+    Like auto_log() but accepts module name strings instead of module objects.
+
+    Only patches modules that are already imported (in sys.modules).
+    Silently skips modules that haven't been imported yet.
+
+    This is the recommended API for nfo_config.py integration files:
+
+        from nfo import auto_log_by_name
+        auto_log_by_name(
+            "myapp.api",
+            "myapp.core",
+            "myapp.models",
+            level="INFO",
+        )
+
+    Args:
+        *module_names: Dotted module names to patch.
+        level: Log level for successful calls.
+        catch_exceptions: If True, suppress exceptions.
+        default: Default return value on exception.
+        include_private: Also wrap _private functions.
+        logger: Custom Logger instance.
+
+    Returns:
+        Total number of functions wrapped across all modules.
+    """
+    resolved = []
+    for name in module_names:
+        mod = sys.modules.get(name)
+        if mod is not None:
+            resolved.append(mod)
+
+    if not resolved:
+        return 0
+
+    return auto_log(
+        *resolved,
+        level=level,
+        catch_exceptions=catch_exceptions,
+        default=default,
+        include_private=include_private,
+        logger=logger,
+    )
