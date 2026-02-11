@@ -1,3 +1,23 @@
+## [0.1.12] - 2026-02-11
+
+### Summary
+
+feat(examples): configuration management system
+
+### Docs
+
+- docs: update README
+- docs: update TODO.md
+
+### Other
+
+- update examples/basic_usage.py
+- update examples/csv_sink.py
+- update examples/markdown_sink.py
+- update examples/multi_sink.py
+- update examples/sqlite_sink.py
+
+
 ## [0.1.11] - 2026-02-11
 
 ### Summary
