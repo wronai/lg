@@ -1,4 +1,4 @@
-.PHONY: help install dev test test-cov lint format build clean registry up down status examples check-pypi-deps publish-pypi bump-patch bump-minor bump-major release sync-pactown-com security security-sast security-deps security-secrets security-all artifacts artifacts-clean artifacts-quick artifacts-docker
+.PHONY: help install dev test test-cov lint format build clean registry up down status examples check-pypi-deps publish-pypi bump-patch bump-minor bump-major publish sync-pactown-com security security-sast security-deps security-secrets security-all artifacts artifacts-clean artifacts-quick artifacts-docker
 
 PYTHON ?= $(shell if [ -x ./venv/bin/python3 ]; then echo ./venv/bin/python3; elif [ -x ./.venv/bin/python3 ]; then echo ./.venv/bin/python3; else echo python3; fi)
 CONFIG ?= saas.pactown.yaml
@@ -91,7 +91,7 @@ examples: ## Run example ecosystem
 init: ## Initialize new pactown ecosystem
 	pactown init
 
-publish: ## Publish all modules to registry
+publish-registry: ## Publish all modules to registry
 	pactown publish $(CONFIG) --registry http://localhost:8800
 
 pull: ## Pull dependencies from registry
@@ -125,7 +125,7 @@ bump-major: ## Bump major version (0.1.0 → 1.0.0)
 	$(BUMP2VERSION) major --config-file .bumpversion.cfg --allow-dirty
 	@echo "Bumped to $$(grep -m1 'version = ' pyproject.toml | cut -d'"' -f2)"
 
-release: publish-pypi ## Bump patch and publish
+publish: publish-pypi ## Bump patch and publish
 
 
 sync-pactown-com:

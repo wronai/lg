@@ -1,3 +1,15 @@
+## [0.1.10] - 2026-02-11
+
+### Summary
+
+feat(build): deep code analysis engine with 4 supporting modules
+
+### Other
+
+- build: update Makefile
+- update tools/sync_pactown_com_dependency.py
+
+
 ## [0.1.2] - 2026-02-11
 
 ### Summary
