@@ -1,3 +1,18 @@
+## [0.1.2] - 2026-02-11
+
+### Summary
+
+chore(goal): multi-language support with 3 supporting modules
+
+### Build
+
+- update pyproject.toml
+
+### Config
+
+- config: update goal.yaml
+
+
 ## [0.1.1] - 2026-02-11
 
 ### Summary
