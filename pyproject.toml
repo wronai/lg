@@ -3,8 +3,8 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "alg"
-version = "0.1.8"
+name = "nfo"
+version = "0.1.9"
 description = "Automatic function logging with decorators — output to SQLite, CSV, and Markdown"
 readme = "README.md"
 license = "Apache-2.0"
