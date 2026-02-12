@@ -1,2 +1,0 @@
-timestamp,level,function_name,module,args,kwargs,arg_types,kwarg_types,return_value,return_type,exception,exception_type,traceback,duration_ms,environment,trace_id,version,llm_analysis
-2026-02-12T10:45:19.567181+00:00,DEBUG,run_bash,__main__,"('echo', 'test from nfo-bash wrapper')",{},"str, str",{},"{'cmd': ['echo', 'test from nfo-bash wrapper'], 'stdout': 'test from nfo-bash wrapper\n', 'stderr': '', 'returncode': 0, 'success': True}",dict,,,,2.385,,,,

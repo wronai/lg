@@ -38,12 +38,13 @@ except ImportError:
         "  pip install python-dotenv\n"
     )
 
-# Look for .env in the same directory as this script
-env_path = Path(__file__).parent / ".env"
+# Look for .env in the examples/ directory (parent of this example)
+examples_dir = Path(__file__).parent.parent
+env_path = examples_dir / ".env"
 
 if not env_path.exists():
     # Fall back to .env.example for demo purposes
-    env_example = Path(__file__).parent / ".env.example"
+    env_example = examples_dir / ".env.example"
     if env_example.exists():
         print(f"No .env found, loading .env.example for demo...")
         env_path = env_example

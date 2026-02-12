@@ -44,9 +44,14 @@ dev = [
     "pytest-asyncio>=0.21.0",
     "prometheus_client>=0.20.0",
 ]
+grpc = [
+    "grpcio>=1.60.0",
+    "grpcio-tools>=1.60.0",
+]
 all = [
     "litellm>=1.0",
     "prometheus_client>=0.20.0",
+    "grpcio>=1.60.0",
 ]
 
 [project.scripts]

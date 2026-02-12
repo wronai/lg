@@ -12,9 +12,25 @@ All notable changes to `nfo` are documented here.
 
 ### Added
 
+- **`nfo` CLI** — universal command proxy with automatic logging:
+  - `nfo run -- <cmd>` — run any command with nfo logging (args, stdout/stderr, return code, duration, language auto-detection)
+  - `nfo logs [db] [--errors] [--level] [--last 24h] [--function]` — query SQLite logs with color output
+  - `nfo serve [--port] [--host]` — start centralized HTTP logging service (built-in FastAPI, no external file needed)
+  - `nfo version` — print version
+  - Entry point registered in `pyproject.toml` (`[project.scripts]`)
+- **`nfo/__main__.py`** — `python -m nfo` support
+- **`nfo serve`** — inline HTTP logging service with `POST /log`, `POST /log/batch`, `GET /logs`, `GET /health`
+- **gRPC server** (`examples/grpc_server.py`) — high-performance Python gRPC logging service implementing `LogCall`, `BatchLog`, `StreamLog` (bidirectional), `QueryLogs`
+- **gRPC client** (`examples/grpc_client.py`) — Python gRPC client demo for all 4 RPCs
+- **`[grpc]` optional dependency** — `pip install nfo[grpc]` installs `grpcio` + `grpcio-tools`
 - **Root `Dockerfile`** — used by `examples/docker-compose-service.yml` for centralized logging service
 - **Multi-language examples** — verified and tested: Go client, Rust client, Bash client, gRPC proto, Kubernetes manifests, Docker Compose service stack
 - **`.env.example` files** — root + `examples/` with all `NFO_*` variables documented
+- **`examples/http_service.py`** — standalone FastAPI centralized logging service with `.env` support
+- **`examples/bash_wrapper.py`** — nfo-bash proxy for shell scripts → SQLite
+- **`examples/bash_client.sh`** — zero-dependency Bash HTTP client (`nfo_log`, `nfo_run`, `nfo_query`)
+- **`examples/env_config_usage.py`** — `.env` file configuration with python-dotenv
+- **`examples/async_usage.py`**, **`auto_log_usage.py`**, **`configure_usage.py`**, **`env_tagger_usage.py`** — new Python examples
 
 ## [0.2.0] - 2026-02-12
 

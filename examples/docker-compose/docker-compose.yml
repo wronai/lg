@@ -7,7 +7,7 @@
 #   cp examples/.env.example examples/.env   # adjust values
 #
 # Usage:
-#   docker compose -f examples/docker-compose-service.yml up --build
+#   docker compose -f examples/docker-compose/docker-compose.yml up --build
 #
 # Test:
 #   curl -X POST http://localhost:${NFO_PORT:-8080}/log \
@@ -22,22 +22,22 @@ services:
   # --- nfo centralized logging service ---
   nfo-logger:
     build:
-      context: ..
+      context: ../..
       dockerfile: Dockerfile
     command: >
       python -c "
-      import uvicorn
-      import sys
-      sys.path.insert(0, '.')
-      from examples.http_service import app
-      uvicorn.run(app, host='0.0.0.0', port=8080)
+      import uvicorn, sys, importlib.util
+      spec = importlib.util.spec_from_file_location('http_service', 'examples/http-service/main.py')
+      mod = importlib.util.module_from_spec(spec)
+      spec.loader.exec_module(mod)
+      uvicorn.run(mod.app, host='0.0.0.0', port=8080)
       "
     ports:
       - "${NFO_PORT:-8080}:8080"
     volumes:
       - nfo-logs:/app/logs
     env_file:
-      - .env.example  # default; override with: docker compose --env-file .env up
+      - ../.env.example  # default; override with: docker compose --env-file .env up
     environment:
       # These override values from env_file
       - NFO_LOG_DIR=/app/logs
@@ -51,7 +51,7 @@ services:
   # --- Example: Python app using nfo directly ---
   app-python:
     build:
-      context: ..
+      context: ../..
       dockerfile: Dockerfile
     command: >
       python -c "
@@ -69,7 +69,7 @@ services:
     volumes:
       - nfo-logs:/app/logs
     env_file:
-      - .env.example
+      - ../.env.example
     environment:
       - NFO_ENV=docker
       - NFO_SINKS=sqlite:/app/logs/python-app.db
@@ -82,7 +82,7 @@ services:
     image: curlimages/curl:latest
     entrypoint: /bin/sh
     env_file:
-      - .env.example
+      - ../.env.example
     environment:
       - NFO_URL=http://nfo-logger:8080
       - NFO_ENV=docker
@@ -107,7 +107,7 @@ services:
     image: curlimages/curl:latest
     entrypoint: /bin/sh
     env_file:
-      - .env.example
+      - ../.env.example
     environment:
       - NFO_URL=http://nfo-logger:8080
     command: >
@@ -131,6 +131,30 @@ services:
     depends_on:
       nfo-logger:
         condition: service_healthy
+
+  # --- nfo gRPC logging service (high-performance alternative) ---
+  nfo-grpc:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    command: >
+      python -c "
+      import sys
+      sys.path.insert(0, '.')
+      sys.path.insert(0, 'examples/grpc-service')
+      from server import serve
+      serve(port=50051)
+      "
+    ports:
+      - "${NFO_GRPC_PORT:-50051}:50051"
+    volumes:
+      - nfo-logs:/app/logs
+    env_file:
+      - ../.env.example
+    environment:
+      - NFO_LOG_DIR=/app/logs
+      - NFO_ENV=docker
+      - NFO_GRPC_PORT=50051
 
 volumes:
   nfo-logs:

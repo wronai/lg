@@ -66,6 +66,7 @@ Output (stderr):
 - **`SQLiteSink`** / **`CSVSink`** / **`MarkdownSink`** / **`JSONSink`** — persist logs to SQLite, CSV, Markdown, JSON Lines
 - **`PrometheusSink`** — export metrics (duration histogram, call count, error rate) to Prometheus/Grafana (`pip install nfo[prometheus]`)
 - **`WebhookSink`** — HTTP POST alerts to Slack/Discord/Teams on ERROR (zero deps, stdlib `urllib`)
+- **CLI** — universal command proxy: `nfo run -- bash deploy.sh prod`, `nfo logs`, `nfo serve`
 - **Docker Compose demo** — FastAPI app + Prometheus + Grafana with pre-built dashboard
 - **Async support** — `@log_call`, `@catch`, `@logged` transparently handle `async def` functions
 - **Zero dependencies** — core uses only Python stdlib; extras via `pip install nfo[prometheus]`, `nfo[llm]`
@@ -549,6 +550,38 @@ sink = EnvTagger(
 )
 ```
 
+## CLI — Universal Command Proxy
+
+After `pip install nfo`, the `nfo` CLI is available globally:
+
+```bash
+# Run any command with automatic logging to SQLite
+nfo run -- bash deploy.sh prod
+nfo run -- python3 train.py --epochs=10
+nfo run -- docker build .
+nfo run -- go run main.go
+
+# Custom sink and environment
+nfo run --sink sqlite:prod.db --env prod -- ./deploy.sh
+
+# Query logs
+nfo logs                              # last 20 entries
+nfo logs app.db --errors              # only errors
+nfo logs --level ERROR --last 24h     # last 24h errors
+nfo logs --function deploy -n 50      # filter by function
+
+# Start centralized HTTP logging service
+nfo serve                             # default: 0.0.0.0:8080
+nfo serve --port 9090                 # custom port
+
+# Version
+nfo version
+```
+
+The CLI logs every command's args, stdout/stderr, return code, duration, and language (auto-detected) to SQLite. Works with any executable — Bash, Python, Go, Rust, Docker, Make.
+
+Also works as `python -m nfo run -- <command>`.
+
 ## What Gets Logged
 
 Each `@log_call` / `@catch` captures:
@@ -577,6 +610,7 @@ Each `@log_call` / `@catch` captures:
 | Auto-log all functions (`auto_log()`) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Class decorator (`@logged`) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | One-liner project setup (`configure()`) | ✅ | ⚠️ | ❌ | ⚠️ | ⚠️ | ❌ |
+| CLI command proxy (`nfo run`) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Capture args/kwargs/types automatically | ✅ | ⚠️ manual | ⚠️ manual | ❌ | ❌ | ❌ |
 | Capture return value + type | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Capture duration per call | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
@@ -599,7 +633,7 @@ Each `@log_call` / `@catch` captures:
 - **[loguru](https://github.com/Delgan/loguru)** — excellent human-readable console output with `@logger.catch`; no auto-function-logging, no structured sinks (SQLite/CSV), no LLM integration
 - **[structlog](https://github.com/hynek/structlog)** — powerful structured key-value logs with processors; requires manual `log.info("msg", key=val)` calls, no auto-capture of args/return/duration
 - **stdlib logging** — ubiquitous but verbose config, no auto-function-logging, no structured sinks
-- **nfo** — the only library that auto-captures function signatures, args, return values, and exceptions with zero boilerplate (`auto_log()` or `@logged`), writes to queryable sinks (SQLite/CSV/Markdown), and integrates LLM-powered analysis + prompt injection detection
+- **nfo** — the only library that auto-captures function signatures, args, return values, and exceptions with zero boilerplate (`auto_log()` or `@logged`), provides a universal CLI proxy (`nfo run -- <any command>`), writes to queryable sinks (SQLite/CSV/Markdown), and integrates LLM-powered analysis + prompt injection detection
 
 ## Examples
 
@@ -626,6 +660,53 @@ See the [`examples/`](examples/) directory:
 - [`go_client.go`](examples/go_client.go) — Go HTTP client for nfo-service
 - [`rust_client.rs`](examples/rust_client.rs) — Rust HTTP client for nfo-service
 
+### gRPC (high-performance)
+
+- [`nfo.proto`](examples/nfo.proto) — gRPC service definition (generate clients for any language)
+- [`grpc_server.py`](examples/grpc_server.py) — Python gRPC server: `LogCall`, `BatchLog`, `StreamLog`, `QueryLogs`
+- [`grpc_client.py`](examples/grpc_client.py) — Python gRPC client demo (all 4 RPCs)
+
+```bash
+# Install
+pip install nfo[grpc]
+
+# Generate stubs (already included, but regenerate if proto changes)
+cd examples/ && python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. nfo.proto
+
+# Start gRPC server
+python examples/grpc_server.py              # default: port 50051
+python examples/grpc_server.py --port 50052 # custom port
+
+# Test with Python client
+python examples/grpc_client.py
+```
+
+### CLI — Universal Command Proxy
+
+```bash
+# Run any command with automatic logging
+nfo run -- bash deploy.sh prod
+nfo run -- python3 train.py --epochs=10
+nfo run -- docker build .
+nfo run -- go run main.go
+
+# Custom sink and environment
+nfo run --sink sqlite:prod.db --env prod -- ./deploy.sh
+
+# Query logs
+nfo logs                              # last 20 entries
+nfo logs app.db --errors              # only errors
+nfo logs --level ERROR --last 24h     # last 24h errors
+nfo logs --function deploy -n 50      # filter by function
+
+# Start centralized HTTP logging service
+nfo serve                             # default: 0.0.0.0:8080
+nfo serve --port 9090                 # custom port
+
+# Version
+nfo version
+```
+
 ### Configuration
 
 - [`.env.example`](examples/.env.example) — all `NFO_*` environment variables with descriptions
@@ -633,9 +714,8 @@ See the [`examples/`](examples/) directory:
 
 ### DevOps / Infrastructure
 
-- [`docker-compose-service.yml`](examples/docker-compose-service.yml) — Docker Compose stack with `env_file` support
+- [`docker-compose-service.yml`](examples/docker-compose-service.yml) — Docker Compose stack: HTTP + gRPC services with `env_file`
 - [`kubernetes/`](examples/kubernetes/) — Kubernetes Deployment + Service + PVC for nfo-logger
-- [`nfo.proto`](examples/nfo.proto) — gRPC service definition for high-performance logging
 
 Run any Python example:
 ```bash
@@ -661,13 +741,12 @@ python examples/bash_wrapper.py ./deploy.sh prod
 
 ## Roadmap (v0.3.x)
 
-See [`TODO.md`](TODO.md) for the full roadmap. Current: **v0.2.3** — 114 tests, 7 sinks, multi-language support. Planned:
+See [`TODO.md`](TODO.md) for the full roadmap. Current: **v0.2.3** — 114 tests, 7 sinks, CLI, HTTP + gRPC services, multi-language support. Planned:
 
 - **`OTELSink`** — OpenTelemetry spans for distributed tracing (Jaeger/Zipkin)
 - **`ElasticsearchSink`** — direct Elasticsearch indexing
-- **Web Dashboard CLI** — `nfo dashboard --db logs.db`
+- **Web Dashboard** — `nfo dashboard --db logs.db` (interactive browser UI)
 - **`replay_logs()`** — replay function calls from logs for regression testing
-- **Log viewer CLI** — `nfo query logs.db --level ERROR --last 24h`
 - **Log rotation** — for CSV, Markdown, JSON sinks
 
 ## Development
