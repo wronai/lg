@@ -1,0 +1,69 @@
+# nfo DevOps Demo Stack
+# Usage: docker compose up --build
+#
+# Services:
+#   nfo-demo    → FastAPI app with all nfo sinks  (http://localhost:8000)
+#   prometheus  → scrapes /metrics from nfo-demo   (http://localhost:9091)
+#   grafana     → dashboards for nfo metrics       (http://localhost:3000, admin/admin)
+
+services:
+  nfo-demo:
+    build:
+      context: .
+      dockerfile: demo/Dockerfile
+    container_name: nfo-demo
+    ports:
+      - "8000:8000"   # FastAPI app
+      - "9090:9090"   # prometheus_client built-in /metrics
+    environment:
+      - NFO_ENV=docker
+      - NFO_VERSION=0.2.0
+      - NFO_LOG_DIR=/data/logs
+      - NFO_PROMETHEUS_PORT=9090
+    volumes:
+      - nfo-logs:/data/logs
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: nfo-prometheus
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./demo/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=7d"
+      - "--web.enable-lifecycle"
+    depends_on:
+      nfo-demo:
+        condition: service_healthy
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: nfo-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./demo/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./demo/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+volumes:
+  nfo-logs:
+  prometheus-data:
+  grafana-data:

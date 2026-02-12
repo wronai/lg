@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: "nfo-demo"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["nfo-demo:8000"]
+        labels:
+          app: "nfo-demo"
+          environment: "demo"
+
+  # Also scrape the prometheus_client built-in server (port 9090 inside container)
+  - job_name: "nfo-demo-prom-client"
+    static_configs:
+      - targets: ["nfo-demo:9090"]
+        labels:
+          app: "nfo-demo-direct"
