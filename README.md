@@ -43,7 +43,7 @@ Output (stderr):
 - **`@log_call`** — logs entry/exit, args with types, return value, exceptions + traceback, duration
 - **`@catch`** — like `@log_call` but suppresses exceptions (returns configurable default)
 - **`@logged`** — class decorator: auto-wraps all public methods
-- **`auto_log()`** — one call to log ALL functions in a module (no individual decorators needed)
+- **`auto_log()`** / **`auto_log_by_name()`** — one call to log ALL functions in a module (no individual decorators needed)
 - **`configure()`** — one-liner project setup with sink specs, stdlib bridge, LLM, env tagging
 - **`LLMSink`** — LLM-powered root-cause analysis via litellm (OpenAI, Anthropic, Ollama)
 - **`EnvTagger`** — auto-tag logs with environment/trace_id/version (K8s, Docker, CI)
@@ -51,6 +51,7 @@ Output (stderr):
 - **`DiffTracker`** — detect output changes between function versions
 - **`detect_prompt_injection()`** — scan args for prompt injection patterns
 - **`SQLiteSink`** / **`CSVSink`** / **`MarkdownSink`** — persist logs to SQLite, CSV, Markdown
+- **Async support** — `@log_call`, `@catch`, `@logged` transparently handle `async def` functions
 - **Zero dependencies** — core uses only Python stdlib; LLM features via `pip install nfo[llm]`
 - **Thread-safe** — all sinks use locks
 
@@ -244,6 +245,29 @@ configure(
 #   NFO_SINKS=sqlite:app.db,csv:app.csv
 ```
 
+## Async Support
+
+`@log_call`, `@catch`, and `@logged` transparently detect `async def` functions — no separate decorator needed:
+
+```python
+from nfo import log_call, catch
+
+@log_call
+async def fetch_data(url: str) -> dict:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            return await resp.json()
+
+@catch(default={})
+async def safe_fetch(url: str) -> dict:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            return await resp.json()
+
+await fetch_data("https://api.example.com")  # logged: args, return, duration
+await safe_fetch("https://bad.url")          # exception caught, returns {}
+```
+
 ## `@logged` — Class Decorator (SOLID)
 
 Auto-wraps all public methods with `@log_call`. Private methods (`_name`) are excluded.
@@ -419,6 +443,7 @@ Each `@log_call` / `@catch` captures:
 | Bridge stdlib loggers | ✅ | ⚠️ intercept | ✅ | N/A |
 | Structured output | ✅ dataclass | ⚠️ string | ✅ dict | ❌ |
 | Zero dependencies (core) | ✅ | ❌ | ❌ | ✅ |
+| Async support (transparent) | ✅ auto-detect | ❌ | ❌ | ❌ |
 | Composable sink pipeline | ✅ | ❌ | ✅ processors | ❌ |
 
 **Key differences:**
@@ -447,8 +472,8 @@ python examples/basic_usage.py
 ## Development
 
 ```bash
-git clone https://github.com/wronai/lg.git
-cd lg
+git clone https://github.com/wronai/nfo.git
+cd nfo
 python -m venv venv && source venv/bin/activate
 pip install -e ".[dev]"
 pytest tests/ -v

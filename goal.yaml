@@ -13,7 +13,7 @@
 
 version: '1.0'
 project:
-  name: lg
+  name: nfo
   type:
   - python
   description: Automatic function logging with decorators — output to SQLite, CSV,
@@ -31,7 +31,7 @@ versioning:
 git:
   commit:
     strategy: conventional
-    scope: lg
+    scope: nfo
     abstraction_level: auto
     abstraction_levels:
       high: '{type}({domain}): {benefit}'

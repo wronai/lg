@@ -1,12 +1,58 @@
+## [0.1.20] - 2026-02-12
+
+### Summary
+
+feat(docs): deep code analysis engine with 4 supporting modules
+
+### Docs
+
+- docs: update README
+- docs: update TODO.md
+
+### Config
+
+- config: update goal.yaml
+
+
 # Changelog
 
 All notable changes to `nfo` are documented here.
 
 ## [Unreleased]
 
+## [0.1.19] - 2026-02-12
+
+### Fixed
+
+- **Duplicate log lines** — set `propagate=False` on stdlib logger to prevent double output
+- **Re-configuration guard** — `configure()` now returns cached logger on repeated calls (use `force=True` to override)
+
+## [0.1.18] - 2026-02-12
+
+### Fixed
+
+- Version sync between `__init__.py` and `pyproject.toml`
+
+## [0.1.17] - 2026-02-12
+
+### Fixed
+
+- `__version__` in `__init__.py` synced with `pyproject.toml` (was out of date)
+
+## [0.1.15] - 2026-02-12
+
 ### Added
 
+- **Async support** — `@log_call`, `@catch`, and `@logged` now transparently handle `async def` functions via `inspect.iscoroutinefunction()`
+- Async tests: 7 new tests for async `@log_call` and `@catch`
+
+## [0.1.14] - 2026-02-11
+
+### Added
+
+- **`auto_log_by_name()`** — like `auto_log()` but accepts module name strings; resolves from `sys.modules`
 - **`auto_log()`** — one-call module-level patching: wraps all functions in a module with `@log_call` or `@catch` without individual decorators
+- `LogEntry` sinks now persist `environment`, `trace_id`, `version`, `llm_analysis` fields
 - **Comparison table** with loguru, structlog, stdlib logging in README
 - CHANGELOG.md, TODO.md
 
