@@ -13,7 +13,7 @@ from nfo.env import EnvTagger, DynamicRouter, DiffTracker
 from nfo.llm import LLMSink, detect_prompt_injection, scan_entry_for_injection
 from nfo.auto import auto_log, auto_log_by_name
 
-__version__ = "0.1.16"
+__version__ = "0.1.17"
 
 __all__ = [
     "log_call",
