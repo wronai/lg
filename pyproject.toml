@@ -49,6 +49,9 @@ all = [
     "prometheus_client>=0.20.0",
 ]
 
+[project.scripts]
+nfo = "nfo.__main__:main"
+
 [tool.setuptools.packages.find]
 include = ["nfo*"]
 
