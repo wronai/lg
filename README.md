@@ -1,13 +1,13 @@
 # nfo
 
-**Automatic function logging with decorators — output to SQLite, CSV, and Markdown.**
+**Automatic function logging with decorators — output to SQLite, CSV, Markdown, JSON, Prometheus + Slack/Discord alerts.**
 
 [![PyPI](https://img.shields.io/pypi/v/nfo)](https://pypi.org/project/nfo/)
 [![Python](https://img.shields.io/pypi/pyversions/nfo)](https://pypi.org/project/nfo/)
 [![License](https://img.shields.io/pypi/l/nfo)](LICENSE)
 
 Zero-dependency Python package that automatically logs function calls using decorators.
-Captures arguments, types, return values, exceptions, and execution time — writes to **SQLite**, **CSV**, or **Markdown**.
+Captures arguments, types, return values, exceptions, and execution time — writes to **SQLite**, **CSV**, **Markdown**, **JSON**, or **Prometheus**. Includes Docker Compose demo with Grafana dashboards.
 
 ## Installation
 
@@ -50,9 +50,12 @@ Output (stderr):
 - **`DynamicRouter`** — route logs to different sinks by env/level/custom rules
 - **`DiffTracker`** — detect output changes between function versions
 - **`detect_prompt_injection()`** — scan args for prompt injection patterns
-- **`SQLiteSink`** / **`CSVSink`** / **`MarkdownSink`** — persist logs to SQLite, CSV, Markdown
+- **`SQLiteSink`** / **`CSVSink`** / **`MarkdownSink`** / **`JSONSink`** — persist logs to SQLite, CSV, Markdown, JSON Lines
+- **`PrometheusSink`** — export metrics (duration histogram, call count, error rate) to Prometheus/Grafana (`pip install nfo[prometheus]`)
+- **`WebhookSink`** — HTTP POST alerts to Slack/Discord/Teams on ERROR (zero deps, stdlib `urllib`)
+- **Docker Compose demo** — FastAPI app + Prometheus + Grafana with pre-built dashboard
 - **Async support** — `@log_call`, `@catch`, `@logged` transparently handle `async def` functions
-- **Zero dependencies** — core uses only Python stdlib; LLM features via `pip install nfo[llm]`
+- **Zero dependencies** — core uses only Python stdlib; extras via `pip install nfo[prometheus]`, `nfo[llm]`
 - **Thread-safe** — all sinks use locks
 
 ## `auto_log()` — Log Everything, Zero Decorators
@@ -155,14 +158,87 @@ compute(2.0, 10.0)
 ### Multiple Sinks
 
 ```python
-from nfo import Logger, SQLiteSink, CSVSink, MarkdownSink
+from nfo import Logger, SQLiteSink, CSVSink, MarkdownSink, JSONSink
 
 logger = Logger(sinks=[
     SQLiteSink("logs.db"),
     CSVSink("logs.csv"),
     MarkdownSink("logs.md"),
+    JSONSink("logs.jsonl"),
 ])
 ```
+
+### JSON Lines (ELK / Grafana Loki)
+
+```python
+from nfo import JSONSink, Logger
+from nfo.decorators import set_default_logger
+
+logger = Logger(sinks=[JSONSink("logs.jsonl")])
+set_default_logger(logger)
+
+# Each @log_call writes one JSON object per line — ready for Filebeat/Promtail
+```
+
+### Prometheus Metrics
+
+```bash
+pip install nfo[prometheus]
+```
+
+```python
+from nfo import SQLiteSink, EnvTagger
+from nfo.prometheus import PrometheusSink
+
+# Metrics: nfo_calls_total, nfo_errors_total, nfo_duration_seconds
+sink = PrometheusSink(
+    delegate=SQLiteSink("logs.db"),  # also persist to SQLite
+    port=9090,                        # auto-starts /metrics HTTP server
+)
+# Prometheus scrapes localhost:9090/metrics
+```
+
+### Webhook Alerts (Slack / Discord / Teams)
+
+```python
+from nfo import SQLiteSink
+from nfo.webhook import WebhookSink
+
+sink = WebhookSink(
+    url="https://hooks.slack.com/services/T.../B.../xxx",
+    delegate=SQLiteSink("logs.db"),
+    levels=["ERROR"],     # only alert on errors
+    format="slack",       # also: "discord", "teams", "raw"
+)
+```
+
+## Docker Compose Demo (DevOps)
+
+Full monitoring stack with Prometheus + Grafana:
+
+```bash
+git clone https://github.com/wronai/nfo.git && cd nfo
+docker compose up --build
+```
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| **nfo-demo** | http://localhost:8000 | FastAPI app with all nfo sinks |
+| **Prometheus** | http://localhost:9091 | Scrapes nfo metrics every 5s |
+| **Grafana** | http://localhost:3000 | Pre-built dashboard (admin/admin) |
+
+Generate load to populate dashboards:
+```bash
+python demo/load_generator.py --url http://localhost:8000 --interval 0.5
+```
+
+Endpoints:
+- `GET /demo/success` — successful function calls
+- `GET /demo/error` — trigger ERROR-level logs + webhook alerts
+- `GET /demo/slow` — slow functions (duration histogram)
+- `GET /demo/batch` — batch of 30+ mixed calls
+- `GET /metrics` — Prometheus metrics
+- `GET /logs?level=ERROR&limit=20` — browse SQLite logs as JSON
 
 ## Project Integration (3 steps)
 
@@ -468,16 +544,16 @@ pip install nfo
 python examples/basic_usage.py
 ```
 
-## Roadmap (v0.2.x)
+## Roadmap (v0.3.x)
 
 See [`TODO.md`](TODO.md) for the full roadmap. Key planned features:
 
-- **`PrometheusSink`** — export metrics (duration, error rate) to Prometheus/Grafana
-- **`WebhookSink`** — Slack/Discord/Teams alerts on ERROR
 - **`OTELSink`** — OpenTelemetry spans for distributed tracing (Jaeger/Zipkin)
-- **Web Dashboard** — lightweight Flask/FastAPI UI for browsing SQLite logs with filters
+- **`ElasticsearchSink`** — direct Elasticsearch indexing
+- **Web Dashboard CLI** — `nfo dashboard --db logs.db`
 - **`replay_logs()`** — replay function calls from logs for regression testing
 - **Log viewer CLI** — `nfo query logs.db --level ERROR --last 24h`
+- **Log rotation** — for CSV, Markdown, JSON sinks
 
 ## Development
 

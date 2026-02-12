@@ -1,50 +1,43 @@
-## [0.1.21] - 2026-02-12
+## [0.2.1] - 2026-02-12
 
 ### Summary
 
-fix(tests): configuration management system
+docs(docs): deep code analysis engine with 6 supporting modules
 
 ### Docs
 
 - docs: update README
 - docs: update TODO.md
-
-### Test
-
-- update tests/test_json_sink.py
-- update tests/test_prometheus.py
-- update tests/test_webhook.py
+- docs: update README
 
 ### Other
 
-- update nfo/__init__.py
-- update nfo/configure.py
-- update nfo/json_sink.py
-- update nfo/prometheus.py
-- update nfo/webhook.py
-
-
-## [0.1.20] - 2026-02-12
-
-### Summary
-
-feat(docs): deep code analysis engine with 4 supporting modules
-
-### Docs
-
-- docs: update README
-- docs: update TODO.md
-
-### Config
-
-- config: update goal.yaml
+- update .dockerignore
 
 
 # Changelog
 
 All notable changes to `nfo` are documented here.
 
-## [Unreleased]
+## [0.2.0] - 2026-02-12
+
+### Added
+
+- **`PrometheusSink`** — export function call metrics (duration histogram, call count, error rate) to Prometheus; auto `/metrics` endpoint; optional dep `pip install nfo[prometheus]`
+- **`WebhookSink`** — HTTP POST alerts to Slack, Discord, or Microsoft Teams on ERROR; fire-and-forget with format templates; zero external dependencies (stdlib `urllib`)
+- **`JSONSink`** — structured JSON Lines output for ELK/Grafana Loki/Fluentd; zero external dependencies
+- **Docker Compose demo stack** — `nfo-demo` (FastAPI) + Prometheus + Grafana with pre-built dashboard
+- **Grafana dashboard** — auto-provisioned: calls/s, error rate, p95 duration, histogram, top functions
+- **Load generator** — `demo/load_generator.py` for populating metrics
+- `configure()` now supports `json:path` and `prometheus:port` sink specs
+- 27 new tests for `PrometheusSink`, `WebhookSink`, `JSONSink` (114 total)
+- Optional dependency groups: `[prometheus]`, `[dashboard]`
+
+### Changed
+
+- Version bump to 0.2.0 (minor: new sinks, Docker Compose, DevOps integration)
+- `pyproject.toml`: added `[prometheus]` and `[dashboard]` optional dependency groups
+- `[dev]` group now includes `pytest-asyncio` and `prometheus_client`
 
 ## [0.1.19] - 2026-02-12
 

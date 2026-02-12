@@ -1,0 +1,87 @@
+// nfo example — gRPC service definition for high-performance logging.
+//
+// Use this proto to generate clients in any language (Go, Rust, Java, C++, etc.)
+// that send log entries to a centralized nfo gRPC service.
+//
+// Generate:
+//   python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. nfo.proto
+//   protoc --go_out=. --go-grpc_out=. nfo.proto
+
+syntax = "proto3";
+
+package nfo;
+
+option go_package = "github.com/wronai/nfo/proto";
+
+// --- Service ---
+
+service NfoLogger {
+  // Log a single function call
+  rpc LogCall(LogRequest) returns (LogResponse);
+
+  // Log multiple entries in one round-trip
+  rpc BatchLog(BatchLogRequest) returns (BatchLogResponse);
+
+  // Stream log entries (high-throughput)
+  rpc StreamLog(stream LogRequest) returns (stream LogResponse);
+
+  // Query stored logs
+  rpc QueryLogs(QueryRequest) returns (QueryResponse);
+}
+
+// --- Messages ---
+
+message LogRequest {
+  string cmd = 1;
+  repeated string args = 2;
+  string language = 3;       // "python", "bash", "go", "rust", etc.
+  string env = 4;            // "prod", "staging", "dev", "ci"
+  bool success = 5;
+  double duration_ms = 6;
+  string output = 7;
+  string error = 8;
+  map<string, string> extra = 9;  // arbitrary key-value metadata
+}
+
+message LogResponse {
+  bool stored = 1;
+  string id = 2;             // unique log entry ID
+  string timestamp = 3;      // server-side timestamp (ISO-8601)
+}
+
+message BatchLogRequest {
+  repeated LogRequest entries = 1;
+}
+
+message BatchLogResponse {
+  int32 stored = 1;
+  repeated LogResponse results = 2;
+}
+
+message QueryRequest {
+  string language = 1;       // filter by language (empty = all)
+  string level = 2;          // filter by level (empty = all)
+  string env = 3;            // filter by environment
+  int32 limit = 4;           // max results (default: 50)
+  string since = 5;          // ISO-8601 timestamp filter
+}
+
+message QueryResponse {
+  repeated LogEntry entries = 1;
+  int32 total = 2;
+}
+
+message LogEntry {
+  string id = 1;
+  string timestamp = 2;
+  string level = 3;
+  string cmd = 4;
+  repeated string args = 5;
+  string language = 6;
+  string env = 7;
+  bool success = 8;
+  double duration_ms = 9;
+  string output = 10;
+  string error = 11;
+  map<string, string> extra = 12;
+}

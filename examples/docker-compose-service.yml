@@ -1,0 +1,117 @@
+# nfo example — Docker Compose stack for centralized logging service.
+#
+# Runs nfo as a shared HTTP logging service accessible from any container.
+# All languages (Python, Bash, Go, Rust, Node.js) send logs to one endpoint.
+#
+# Usage:
+#   docker compose -f examples/docker-compose-service.yml up --build
+#
+# Test:
+#   curl -X POST http://localhost:8080/log \
+#     -H "Content-Type: application/json" \
+#     -d '{"cmd":"deploy","args":["prod"],"language":"bash"}'
+#
+#   curl http://localhost:8080/logs
+
+version: '3.8'
+
+services:
+  # --- nfo centralized logging service ---
+  nfo-logger:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    command: >
+      python -c "
+      import uvicorn
+      import sys
+      sys.path.insert(0, '.')
+      from examples.http_service import app
+      uvicorn.run(app, host='0.0.0.0', port=8080)
+      "
+    ports:
+      - "8080:8080"
+    volumes:
+      - nfo-logs:/app/logs
+    environment:
+      - NFO_LOG_DIR=/app/logs
+      - NFO_ENV=docker
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # --- Example: Python app using nfo directly ---
+  app-python:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    command: >
+      python -c "
+      from nfo import configure, log_call
+      configure(sinks=['sqlite:/app/logs/python-app.db'])
+
+      @log_call
+      def process_order(order_id):
+          return {'id': order_id, 'status': 'ok'}
+
+      for i in range(5):
+          process_order(f'ORD-{i:03d}')
+      print('Python app: 5 orders processed')
+      "
+    volumes:
+      - nfo-logs:/app/logs
+    environment:
+      - NFO_ENV=docker
+    depends_on:
+      nfo-logger:
+        condition: service_healthy
+
+  # --- Example: Bash app using nfo HTTP client ---
+  app-bash:
+    image: curlimages/curl:latest
+    entrypoint: /bin/sh
+    command: >
+      -c "
+      echo 'Bash app: sending log entries...'
+      for i in 1 2 3 4 5; do
+        curl -s -X POST http://nfo-logger:8080/log \
+          -H 'Content-Type: application/json' \
+          -d \"{\\\"cmd\\\":\\\"backup\\\",\\\"args\\\":[\\\"db-$$i\\\"],\\\"language\\\":\\\"bash\\\",\\\"env\\\":\\\"docker\\\"}\"
+        echo \"  Sent: backup db-$$i\"
+      done
+      echo 'Bash app: done'
+      "
+    depends_on:
+      nfo-logger:
+        condition: service_healthy
+
+  # --- Example: Generic service logging via curl sidecar ---
+  app-generic:
+    image: curlimages/curl:latest
+    entrypoint: /bin/sh
+    command: >
+      -c "
+      echo 'Generic app: sending multi-language log entries...'
+      curl -s -X POST http://nfo-logger:8080/log/batch \
+        -H 'Content-Type: application/json' \
+        -d '{
+          \"entries\": [
+            {\"cmd\":\"build\",\"args\":[\"v1.2.3\"],\"language\":\"go\",\"env\":\"docker\"},
+            {\"cmd\":\"compile\",\"args\":[\"--release\"],\"language\":\"rust\",\"env\":\"docker\"},
+            {\"cmd\":\"test\",\"args\":[\"--all\"],\"language\":\"node\",\"env\":\"docker\"}
+          ]
+        }'
+      echo
+      echo 'Generic app: querying all logs...'
+      curl -s http://nfo-logger:8080/logs?limit=20 | head -c 500
+      echo
+      echo 'Generic app: done'
+      "
+    depends_on:
+      nfo-logger:
+        condition: service_healthy
+
+volumes:
+  nfo-logs:

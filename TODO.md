@@ -1,16 +1,20 @@
 # nfo — TODO / Roadmap
 
-## ✅ Done (v0.1.19)
+## ✅ Done (v0.2.0)
 
 - [x] Core: `@log_call`, `@catch` decorators
 - [x] Sinks: `SQLiteSink`, `CSVSink`, `MarkdownSink`
+- [x] `JSONSink` — structured JSON Lines output for ELK/Grafana Loki
+- [x] `PrometheusSink` — export metrics (duration, error rate, call count) to Prometheus
+- [x] `WebhookSink` — HTTP POST alerts to Slack/Discord/Teams on ERROR
 - [x] `Logger` — central dispatcher with multiple sinks
 - [x] `configure()` — one-liner project setup with sink specs, env overrides
-- [x] `configure(force=True)` — re-configuration guard (returns cached logger unless forced)
+- [x] `configure(force=True)` — re-configuration guard
+- [x] `configure()` supports `json:path` and `prometheus:port` sink specs
 - [x] `@logged` — class decorator (auto-wrap all public methods)
 - [x] `@skip` — exclude methods from `@logged`
 - [x] `auto_log()` — module-level patching (one call = all functions logged)
-- [x] `auto_log_by_name()` — same as `auto_log()` but accepts module name strings
+- [x] `auto_log_by_name()` — same but accepts module name strings
 - [x] `_StdlibBridge` — forward stdlib `logging.getLogger()` to nfo sinks
 - [x] `LLMSink` — LLM-powered log analysis via litellm
 - [x] `detect_prompt_injection()` — regex prompt injection detection
@@ -19,51 +23,47 @@
 - [x] `DiffTracker` — detect output changes between versions
 - [x] Async support: `@log_call`, `@catch`, `@logged` transparently handle `async def`
 - [x] Duplicate log fix: `propagate=False` prevents double output
-- [x] Integration: pactown (`nfo_config.py` + cli.py + runner_api.py)
-- [x] Integration: pactown-com (`nfo_config.py` + main.py)
-- [x] 87 tests passing
-- [x] README with comparison table, integration guide, LLM features
+- [x] Docker Compose demo: FastAPI app + Prometheus + Grafana (pre-built dashboard)
+- [x] Grafana dashboard: calls/s, error rate, p95 duration, histogram, top functions
+- [x] Load generator: `demo/load_generator.py`
+- [x] Integration: pactown + pactown-com
+- [x] 114 tests passing
+- [x] README with comparison table (polog, logdecorator, loguru, structlog)
 - [x] CHANGELOG.md
 
-## 🔜 Next (v0.2.x)
+## 🔜 Next (v0.3.x)
 
 ### New Sinks
 
-- [ ] `PrometheusSink` — export metrics (duration, error rate, call count) to Prometheus; optional dep `prometheus_client`; auto `/metrics` endpoint
-- [ ] `WebhookSink` — HTTP POST alerts to Slack/Discord/Teams on ERROR; configurable URL + payload template
-- [ ] `OTELSink` — OpenTelemetry spans for distributed tracing; export to Jaeger/Zipkin via OTLP; optional dep `opentelemetry-sdk`
-- [ ] `JSONSink` — structured JSON output for ELK/Grafana Loki
+- [ ] `OTELSink` — OpenTelemetry spans for distributed tracing (Jaeger/Zipkin via OTLP)
 - [ ] `ElasticsearchSink` — direct Elasticsearch indexing for production log aggregation
 
 ### Web Dashboard
 
-- [ ] Lightweight Flask/FastAPI server for browsing SQLite logs
+- [ ] Standalone `nfo-dashboard` CLI: `nfo dashboard --db logs.db`
 - [ ] Filter by `trace_id`, `environment`, `level`, `function_name`, date range
-- [ ] Endpoint: `GET /query?env=prod&level=ERROR&last=24h`
-- [ ] Optional dep: `pip install nfo[dashboard]`
+- [ ] REST API: `GET /query?env=prod&level=ERROR&last=24h`
 
 ### Replay & Testing
 
 - [ ] `replay_logs()` — replay function calls from SQLite logs for regression testing
-- [ ] `replay_from_sqlite("logs.db", max_calls=100)` — bounded replay with assertions
+- [ ] `replay_from_sqlite("logs.db", max_calls=100)` — bounded replay
 
 ### Core Improvements
 
 - [ ] Log viewer CLI: `nfo query logs.db --level ERROR --last 24h`
-- [ ] Log rotation for file-based sinks (CSV, Markdown)
+- [ ] Log rotation for file-based sinks (CSV, Markdown, JSON)
 - [ ] Sampling: log only N% of calls for high-throughput functions
 - [ ] GitHub Actions integration: auto-comment LLM analysis on failed CI builds
 
-### Composable Pipeline (target)
+### Composable Pipeline (achieved ✅)
 
 ```python
-# Full monitoring stack
+# Full monitoring stack (working in v0.2.0)
 sink = PrometheusSink(       # metrics → Grafana
     WebhookSink(             # alerts → Slack
-        OTELSink(            # tracing → Jaeger
-            EnvTagger(       # tagging
-                SQLiteSink("logs.db")
-            )
+        EnvTagger(           # tagging
+            SQLiteSink("logs.db")
         ),
         url="https://hooks.slack.com/...",
         levels=["ERROR"],
@@ -74,7 +74,7 @@ sink = PrometheusSink(       # metrics → Grafana
 
 ## 💡 Ideas
 
-- `GraphQLSink` — GraphQL query interface over SQLite logs (`{ errors(env: "prod") { func duration } }`)
+- `GraphQLSink` — GraphQL query interface over SQLite logs
 - `PineconeSink` / `VectorSink` — semantic log search via embeddings
 - LangChain/LlamaIndex integration for semantic log search
 - Auto-generate unit tests from logged function calls
