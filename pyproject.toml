@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nfo"
-version = "0.1.21"
+version = "0.2.0"
 description = "Automatic function logging with decorators — output to SQLite, CSV, Markdown + LLM-powered log analysis"
 readme = "README.md"
 license = "Apache-2.0"
@@ -12,7 +12,7 @@ requires-python = ">=3.9"
 authors = [
     {name = "wronai"},
 ]
-keywords = ["logging", "decorator", "sqlite", "csv", "markdown", "auto-logging", "llm", "litellm"]
+keywords = ["logging", "decorator", "sqlite", "csv", "markdown", "auto-logging", "llm", "litellm", "prometheus", "grafana", "webhook", "devops"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -30,12 +30,23 @@ classifiers = [
 llm = [
     "litellm>=1.0",
 ]
+prometheus = [
+    "prometheus_client>=0.20.0",
+]
+dashboard = [
+    "fastapi>=0.100.0",
+    "uvicorn>=0.20.0",
+    "prometheus_client>=0.20.0",
+]
 dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
+    "pytest-asyncio>=0.21.0",
+    "prometheus_client>=0.20.0",
 ]
 all = [
     "litellm>=1.0",
+    "prometheus_client>=0.20.0",
 ]
 
 [tool.setuptools.packages.find]
