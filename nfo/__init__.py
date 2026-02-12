@@ -22,7 +22,7 @@ def __getattr__(name: str):
         return PrometheusSink
     raise AttributeError(f"module 'nfo' has no attribute {name!r}")
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 __all__ = [
     "log_call",
