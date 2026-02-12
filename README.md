@@ -5,6 +5,19 @@
 [![PyPI](https://img.shields.io/pypi/v/nfo)](https://pypi.org/project/nfo/)
 [![Python](https://img.shields.io/pypi/pyversions/nfo)](https://pypi.org/project/nfo/)
 [![License](https://img.shields.io/pypi/l/nfo)](LICENSE)
+[![Downloads](https://img.shields.io/pypi/dm/nfo)](https://pypi.org/project/nfo/)
+[![GitHub stars](https://img.shields.io/github/stars/wronai/nfo?style=social)](https://github.com/wronai/nfo/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/wronai/nfo?style=social)](https://github.com/wronai/nfo/network/members)
+[![GitHub issues](https://img.shields.io/github/issues/wronai/nfo)](https://github.com/wronai/nfo/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/wronai/nfo)](https://github.com/wronai/nfo/pulls)
+[![Tests](https://img.shields.io/github/actions/workflow/status/wronai/nfo/test.yml?label=tests)](https://github.com/wronai/nfo/actions)
+[![Coverage](https://img.shields.io/codecov/c/github/wronai/nfo)](https://codecov.io/gh/wronai/nfo)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Type checking: mypy](https://img.shields.io/badge/type%20checking-mypy-blue.svg)](http://mypy-lang.org/)
+[![Dependencies](https://img.shields.io/badge/dependencies-zero%20for%20core-brightgreen)](https://pypi.org/project/nfo/)
+[![Optional deps](https://img.shields.io/badge/optional%20deps-prometheus%2C%20llm-blue)](https://pypi.org/project/nfo/)
+[![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macos%20%7C%20windows-lightgrey)](https://pypi.org/project/nfo/)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](https://pypi.org/project/nfo/)
 
 Zero-dependency Python package that automatically logs function calls using decorators.
 Captures arguments, types, return values, exceptions, and execution time — writes to **SQLite**, **CSV**, **Markdown**, **JSON**, or **Prometheus**. Includes Docker Compose demo with Grafana dashboards.
@@ -648,7 +661,7 @@ python examples/bash_wrapper.py ./deploy.sh prod
 
 ## Roadmap (v0.3.x)
 
-See [`TODO.md`](TODO.md) for the full roadmap. Key planned features:
+See [`TODO.md`](TODO.md) for the full roadmap. Current: **v0.2.3** — 114 tests, 7 sinks, multi-language support. Planned:
 
 - **`OTELSink`** — OpenTelemetry spans for distributed tracing (Jaeger/Zipkin)
 - **`ElasticsearchSink`** — direct Elasticsearch indexing

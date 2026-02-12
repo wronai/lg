@@ -1,35 +1,52 @@
 # nfo — TODO / Roadmap
 
-## ✅ Done (v0.2.0)
+## ✅ Done (v0.2.3)
 
-- [x] Core: `@log_call`, `@catch` decorators
-- [x] Sinks: `SQLiteSink`, `CSVSink`, `MarkdownSink`
-- [x] `JSONSink` — structured JSON Lines output for ELK/Grafana Loki
-- [x] `PrometheusSink` — export metrics (duration, error rate, call count) to Prometheus
-- [x] `WebhookSink` — HTTP POST alerts to Slack/Discord/Teams on ERROR
-- [x] `Logger` — central dispatcher with multiple sinks
-- [x] `configure()` — one-liner project setup with sink specs, env overrides
-- [x] `configure(force=True)` — re-configuration guard
-- [x] `configure()` supports `json:path` and `prometheus:port` sink specs
+### Core
+- [x] `@log_call`, `@catch` decorators
 - [x] `@logged` — class decorator (auto-wrap all public methods)
 - [x] `@skip` — exclude methods from `@logged`
 - [x] `auto_log()` — module-level patching (one call = all functions logged)
 - [x] `auto_log_by_name()` — same but accepts module name strings
+- [x] `Logger` — central dispatcher with multiple sinks
+- [x] `configure()` — one-liner project setup with sink specs, env overrides
+- [x] `configure(force=True)` — re-configuration guard
+- [x] Async support: `@log_call`, `@catch`, `@logged` transparently handle `async def`
+- [x] Duplicate log fix: `propagate=False` prevents double output
 - [x] `_StdlibBridge` — forward stdlib `logging.getLogger()` to nfo sinks
-- [x] `LLMSink` — LLM-powered log analysis via litellm
-- [x] `detect_prompt_injection()` — regex prompt injection detection
+
+### Sinks
+- [x] `SQLiteSink`, `CSVSink`, `MarkdownSink`
+- [x] `JSONSink` — structured JSON Lines output for ELK/Grafana Loki
+- [x] `PrometheusSink` — export metrics (duration, error rate, call count) to Prometheus
+- [x] `WebhookSink` — HTTP POST alerts to Slack/Discord/Teams on ERROR
+- [x] `configure()` supports `json:path` and `prometheus:port` sink specs
+
+### Environment & Analysis
 - [x] `EnvTagger` — auto-tag logs with environment/trace_id/version
 - [x] `DynamicRouter` — route logs by env/level/custom rules
 - [x] `DiffTracker` — detect output changes between versions
-- [x] Async support: `@log_call`, `@catch`, `@logged` transparently handle `async def`
-- [x] Duplicate log fix: `propagate=False` prevents double output
+- [x] `LLMSink` — LLM-powered log analysis via litellm
+- [x] `detect_prompt_injection()` — regex prompt injection detection
+
+### DevOps & Multi-language
 - [x] Docker Compose demo: FastAPI app + Prometheus + Grafana (pre-built dashboard)
 - [x] Grafana dashboard: calls/s, error rate, p95 duration, histogram, top functions
 - [x] Load generator: `demo/load_generator.py`
-- [x] Integration: pactown + pactown-com
-- [x] 114 tests passing
+- [x] Root `Dockerfile` + `examples/docker-compose-service.yml` (centralized logging service)
+- [x] Kubernetes manifests: Deployment + Service + PVC
+- [x] gRPC proto definition (`examples/nfo.proto`)
+- [x] HTTP logging service (`examples/http_service.py`) — FastAPI, multi-language endpoint
+- [x] Multi-language clients: Bash (`bash_client.sh`), Go (`go_client.go`), Rust (`rust_client.rs`)
+- [x] `.env.example` files (root + examples/) with all `NFO_*` variables
+- [x] `bump2version` config synced: `pyproject.toml`, `VERSION`, `nfo/__init__.py` bump atomically
+
+### Quality
+- [x] 114 tests passing (Python 3.13)
+- [x] All Python examples verified and runnable
 - [x] README with comparison table (polog, logdecorator, loguru, structlog)
 - [x] CHANGELOG.md
+- [x] Integration: pactown + pactown-com
 
 ## 🔜 Next (v0.3.x)
 

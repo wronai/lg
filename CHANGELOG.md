@@ -1,23 +1,20 @@
-## [0.2.1] - 2026-02-12
-
-### Summary
-
-docs(docs): deep code analysis engine with 6 supporting modules
-
-### Docs
-
-- docs: update README
-- docs: update TODO.md
-- docs: update README
-
-### Other
-
-- update .dockerignore
-
-
 # Changelog
 
 All notable changes to `nfo` are documented here.
+
+## [0.2.3] - 2026-02-12
+
+### Fixed
+
+- **`bump2version` config** — synced `.bumpversion.cfg` to track `pyproject.toml`, `VERSION`, and `nfo/__init__.py`; all three files now bump atomically
+- **`env_tagger_usage.py`** — fixed `sqlite3.Row.get()` → `dict(row).get()` (Python 3.13 compat)
+- **Stale pip install** — resolved nfo 0.1.17 in `site-packages` shadowing local source
+
+### Added
+
+- **Root `Dockerfile`** — used by `examples/docker-compose-service.yml` for centralized logging service
+- **Multi-language examples** — verified and tested: Go client, Rust client, Bash client, gRPC proto, Kubernetes manifests, Docker Compose service stack
+- **`.env.example` files** — root + `examples/` with all `NFO_*` variables documented
 
 ## [0.2.0] - 2026-02-12
 

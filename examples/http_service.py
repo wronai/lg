@@ -119,16 +119,23 @@ def _store_entry(entry: LogEntry) -> dict:
     from nfo.models import LogEntry as NfoEntry
 
     nfo_entry = NfoEntry(
+        timestamp=NfoEntry.now(),
+        level="INFO" if entry.success is not False else "ERROR",
         function_name=entry.cmd,
+        module=entry.language,
         args=tuple(entry.args),
         kwargs={
             "language": entry.language,
             "env": entry.env,
         },
-        level="INFO" if entry.success is not False else "ERROR",
+        arg_types=[type(a).__name__ for a in entry.args],
+        kwarg_types={"language": "str", "env": "str"},
         return_value=entry.output,
+        return_type=type(entry.output).__name__ if entry.output is not None else None,
         exception=entry.error,
+        exception_type="RemoteError" if entry.error else None,
         duration_ms=entry.duration_ms or 0.0,
+        environment=entry.env,
     )
     logger.emit(nfo_entry)
 
