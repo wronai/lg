@@ -1,3 +1,15 @@
+## [0.2.11] - 2026-02-15
+
+### Summary
+
+feat(config): configuration management system
+
+### Other
+
+- update nfo/configure.py
+- update nfo/decorators.py
+
+
 ## [0.2.10] - 2026-02-15
 
 ### Summary

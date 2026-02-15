@@ -21,11 +21,17 @@ from nfo.decorators import set_default_logger
 _configured = False
 _last_logger: Optional["Logger"] = None
 _global_meta_policy: Optional[Any] = None
+_global_auto_extract_meta: bool = False
 
 
 def get_global_meta_policy() -> Optional[Any]:
     """Return the globally configured :class:`~nfo.meta.ThresholdPolicy` (if any)."""
     return _global_meta_policy
+
+
+def get_global_auto_extract_meta() -> bool:
+    """Return ``True`` if ``auto_extract_meta`` was enabled via :func:`configure`."""
+    return _global_auto_extract_meta
 
 
 def _parse_sink_spec(spec: str) -> Sink:
@@ -193,7 +199,7 @@ def configure(
             auto_extract_meta=True,
         )
     """
-    global _configured, _last_logger, _global_meta_policy
+    global _configured, _last_logger, _global_meta_policy, _global_auto_extract_meta
 
     if _configured and not force and _last_logger is not None:
         return _last_logger
@@ -227,8 +233,9 @@ def configure(
             meta_policy.max_arg_bytes = threshold
             meta_policy.max_return_bytes = threshold
 
-    # Store global meta policy
+    # Store global meta policy and auto_extract flag
     _global_meta_policy = meta_policy
+    _global_auto_extract_meta = auto_extract_meta
 
     # Build sink list
     resolved_sinks: List[Sink] = []

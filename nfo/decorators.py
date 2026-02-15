@@ -71,13 +71,23 @@ def _maybe_extract(
 ) -> Optional[Dict[str, Any]]:
     """Build ``extra`` dict with metadata when *extract_meta_flag* is True.
 
+    When *extract_meta_flag* is ``False``, falls back to the global
+    ``auto_extract_meta`` setting from :func:`~nfo.configure.configure`.
+
     Returns ``None`` when metadata extraction is disabled.
     """
-    if not extract_meta_flag:
+    effective = extract_meta_flag
+    if not effective:
+        from nfo.configure import get_global_auto_extract_meta
+        effective = get_global_auto_extract_meta()
+    if not effective:
         return None
     from nfo.extractors import extract_meta as _extract
     from nfo.meta import ThresholdPolicy, sizeof
 
+    if meta_policy is None:
+        from nfo.configure import get_global_meta_policy
+        meta_policy = get_global_meta_policy()
     policy = meta_policy if meta_policy is not None else ThresholdPolicy()
     args_meta = []
     for arg in args:
