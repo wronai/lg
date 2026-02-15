@@ -6,7 +6,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/nfo)](https://pypi.org/project/nfo/)
 [![Python](https://img.shields.io/pypi/pyversions/nfo)](https://pypi.org/project/nfo/)
-[![License](https://img.shields.io/pypi/l/nfo)](LICENSE)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Downloads](https://img.shields.io/pypi/dm/nfo)](https://pypi.org/project/nfo/)
 [![GitHub stars](https://img.shields.io/github/stars/wronai/nfo?style=social)](https://github.com/wronai/nfo/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/wronai/nfo?style=social)](https://github.com/wronai/nfo/network/members)
@@ -947,8 +947,8 @@ pytest tests/ -v
 
 ## License
 
-[Apache-2.0](LICENSE)
+Apache License 2.0 - see [LICENSE](LICENSE) for details.
 
 ## Author
 
-Created by **Tom Sapletta** - [info@softreck.com](mailto:info@softreck.com)
+Created by **Tom Sapletta** - [tom@sapletta.com](mailto:tom@sapletta.com)

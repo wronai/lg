@@ -1,3 +1,31 @@
+## [0.2.9] - 2026-02-15
+
+### Summary
+
+refactor(goal): CLI interface improvements
+
+### Docs
+
+- docs: update README
+
+### Test
+
+- update tests/test_click_integration.py
+- update tests/test_terminal.py
+
+### Other
+
+- update examples/click-integration/demo_basic.py
+- update examples/click-integration/demo_configure.py
+- update examples/click-integration/demo_formats.py
+- update nfo/__init__.py
+- update nfo/click.py
+- update nfo/configure.py
+- update nfo/terminal.py
+- update project.functions.toon
+- update project.toon
+
+
 ## [0.3.0] - 2026-02-15
 
 ### Summary

@@ -1,0 +1,478 @@
+# nfo | 65f 10401L | python:63/go:1/rust:1
+# Keys: M=modules, D=details, i=imports, c=classes, f=functions, m=methods
+M[65]:
+  demo/app.py,179
+  demo/load_generator.py,49
+  tests/test_prometheus.py,86
+  tests/test_auto.py,207
+  tests/test_binary_router.py,137
+  tests/test_env.py,183
+  tests/test_extractors.py,247
+  tests/test_llm.py,127
+  tests/test_buffered_sink.py,142
+  tests/test_ring_buffer_sink.py,129
+  tests/__init__.py,0
+  tests/test_json_sink.py,105
+  tests/test_configure.py,240
+  tests/test_sinks.py,89
+  tests/test_terminal.py,263
+  tests/test_meta.py,74
+  tests/test_click_integration.py,206
+  tests/test_webhook.py,99
+  tests/test_decorators.py,254
+  tests/test_meta_decorators.py,174
+  tools/sync_pactown_com_dependency.py,7
+  nfo/auto.py,153
+  nfo/llm.py,155
+  nfo/configure.py,262
+  nfo/extractors.py,179
+  nfo/webhook.py,118
+  nfo/buffered_sink.py,85
+  nfo/__init__.py,66
+  nfo/ring_buffer_sink.py,69
+  nfo/setup.py,25
+  nfo/__main__.py,361
+  nfo/meta.py,51
+  nfo/binary_router.py,50
+  nfo/models.py,75
+  nfo/decorators.py,364
+  nfo/terminal.py,221
+  nfo/env.py,172
+  nfo/meta_decorators.py,207
+  nfo/prometheus.py,109
+  nfo/logged.py,78
+  nfo/json_sink.py,53
+  nfo/click.py,189
+  nfo/logger.py,69
+  nfo/sinks.py,153
+  examples/http-service/main.py,142
+  examples/auto-log/main.py,58
+  examples/bash-wrapper/main.py,62
+  examples/sqlite-sink/main.py,41
+  examples/go-client/main.go,107
+  examples/configure/main.py,60
+  examples/rust-client/main.rs,108
+  examples/basic-usage/main.py,24
+  examples/markdown-sink/main.py,28
+  examples/csv-sink/main.py,27
+  examples/grpc-service/server.py,173
+  examples/grpc-service/client.py,128
+  examples/grpc-service/nfo_pb2_grpc.py,209
+  examples/grpc-service/nfo_pb2.py,46
+  examples/multi-sink/main.py,50
+  examples/env-tagger/main.py,102
+  examples/env-config/main.py,104
+  examples/click-integration/demo_basic.py,47
+  examples/click-integration/demo_configure.py,35
+  examples/click-integration/demo_formats.py,56
+  examples/async-usage/main.py,72
+D:
+  demo/app.py:
+    i: os,random,time,nfo,fastapi.FastAPI,fastapi.responses.{JSONResponse,PlainTextResponse},nfo.{catch,log_call},pathlib.Path
+    e: LOG_DIR,DB_PATH,JSONL_PATH,PROMETHEUS_PORT,WEBHOOK_URL,ENVIRONMENT,VERSION,compute_fibonacci
+    UserService: create_user(2),delete_user(1)
+    compute_fibonacci(n:int)->int
+    process_order(order_id:str;amount:float)->dict
+    risky_division(a:float;b:float)->float
+    slow_operation(duration:float)->str
+    health()
+    demo_success()
+    demo_error()
+    demo_slow()
+  demo/load_generator.py:
+    i: argparse,random,time,urllib.{error,request}
+    e: ENDPOINTS,weighted_choice,main
+    weighted_choice(endpoints)
+    main()
+  tests/test_prometheus.py:
+    i: pytest,nfo.models.LogEntry,nfo.prometheus.PrometheusSink
+    e: TestPrometheusSink
+    TestPrometheusSink: test_increments_call_counter(0),test_increments_error_counter(0),test_records_duration_histogram(0),test_no_duration_when_none(0),test_delegates_to_downstream(0)
+    _make_entry()
+  tests/test_auto.py:
+    i: types,pytest,nfo.auto.{_should_patch,auto_log},nfo.decorators.set_default_logger,nfo.logged.skip,nfo.logger.Logger,nfo.models.LogEntry,nfo.sinks.Sink
+    e: MemorySink,TestAutoLog,TestAutoLogByName
+    MemorySink: __init__(0),write(1),close(0)
+    TestAutoLog: test_patches_public_functions(0),test_skips_private_functions(0),test_include_private(0),test_catch_exceptions_mode(0),test_does_not_double_wrap(0)
+    TestAutoLogByName: test_patches_by_module_name(0),test_skips_missing_modules(0),test_multiple_modules_by_name(0)
+    _make_module(name:str='test_mod')->types.ModuleType
+  tests/test_binary_router.py:
+    i: pytest,nfo.binary_router.BinaryAwareRouter,nfo.models.LogEntry,nfo.sinks.Sink
+    e: MemorySink,TestBinaryAwareRouter
+    MemorySink: __init__(0),write(1),close(0)
+    TestBinaryAwareRouter: test_meta_log_routes_to_lightweight(0),test_normal_entry_routes_to_full(0),test_large_data_routes_to_heavy(0),test_large_data_no_heavy_sink_falls_to_full(0),test_large_return_value_routes_to_heavy(0)
+    _make_entry()->LogEntry
+  tests/test_env.py:
+    i: pytest,nfo.env.{DiffTracker,DynamicRouter,EnvTagger,_detect_environment,generate_trace_id},nfo.models.LogEntry,nfo.sinks.Sink
+    e: MemorySink,TestEnvTagger,TestDynamicRouter,TestDiffTracker
+    MemorySink: __init__(0),write(1),close(0)
+    TestEnvTagger: test_tags_environment(0),test_tags_trace_id(0),test_tags_version(0),test_auto_detect_env(1),test_auto_detect_ci(1)
+    TestDynamicRouter: test_routes_by_env(0),test_routes_by_level(0),test_default_fallback(0),test_no_default_no_match(0),test_first_match_wins(0)
+    TestDiffTracker: test_no_diff_same_version(0),test_detects_diff_across_versions(0),test_no_diff_without_version(0),test_different_functions_no_diff(0),test_close_delegates(0)
+    _make_entry()->LogEntry
+  tests/test_extractors.py:
+    i: hashlib,io,struct,pytest,nfo.extractors
+    e: TestDetectFormat,TestExtractImageMeta,TestExtractBinaryMeta,TestExtractFileMeta,TestExtractWavMeta,TestExtractNumpyMeta,TestExtractMeta,TestCustomExtractors
+    TestDetectFormat: test_png(0),test_jpeg(0),test_bmp(0),test_gzip(0),test_pdf(0)
+    TestExtractImageMeta: test_png_dimensions(0),test_jpeg_dimensions(0),test_bmp_dimensions(0),test_size_bytes(0)
+    TestExtractBinaryMeta: test_basic_fields(0),test_high_entropy_detection(0),test_low_entropy(0),test_empty_bytes(0),test_known_format_detection(0)
+    TestExtractFileMeta: test_bytesio(0),test_stringio(0),test_real_file(1)
+    TestExtractWavMeta: test_stereo_44100(0),test_mono_16000(0)
+    _make_png(width:int=100;height:int=200)->bytes
+    _make_jpeg(width:int=640;height:int=480)->bytes
+    _make_bmp(width:int=320;height:int=240)->bytes
+    _make_wav(channels:int=2;sample_rate:int=44100;bits:int=16;data_size:int=88200)->bytes
+  tests/test_llm.py:
+    i: pytest,nfo.llm.{LLMSink,_DEFAULT_SYSTEM_PROMPT,detect_prompt_injection,scan_entry_for_injection},nfo.models.LogEntry,nfo.sinks.Sink
+    e: MemorySink,TestPromptInjection,TestLLMSink
+    MemorySink: __init__(0),write(1),close(0)
+    TestPromptInjection: test_detects_ignore_instructions(0),test_detects_system_prompt(0),test_detects_jailbreak(0),test_detects_dan_mode(0),test_detects_reveal_prompt(0)
+    TestLLMSink: test_delegates_to_sink(0),test_injection_detection_on_write(0),test_analyze_levels_filter(0),test_build_user_prompt(0),test_close_delegates(0)
+    _make_entry()->LogEntry
+  tests/test_buffered_sink.py:
+    i: threading,time,pytest,nfo.buffered_sink.AsyncBufferedSink,nfo.models.LogEntry,nfo.sinks.Sink
+    e: MemorySink,TestAsyncBufferedSink
+    MemorySink: __init__(0),write(1),close(0),count(0)
+    TestAsyncBufferedSink: test_flush_on_buffer_full(0),test_flush_on_interval(0),test_flush_on_error_entry(0),test_no_flush_on_error_when_disabled(0),test_close_flushes_remaining(0)
+    _make_entry()->LogEntry
+  tests/test_ring_buffer_sink.py:
+    i: pytest,nfo.models.LogEntry,nfo.ring_buffer_sink.RingBufferSink,nfo.sinks.Sink
+    e: MemorySink,TestRingBufferSink
+    MemorySink: __init__(0),write(1),close(0)
+    TestRingBufferSink: test_normal_entries_buffered_not_written(0),test_error_flushes_context_plus_error(0),test_critical_also_flushes(0),test_custom_trigger_levels(0),test_error_does_not_trigger_with_custom_levels(0)
+    _make_entry()->LogEntry
+  tests/test_json_sink.py:
+    i: json,os,tempfile,pytest,nfo.json_sink.JSONSink,nfo.models.LogEntry
+    e: tmp_jsonl,TestJSONSink
+    TestJSONSink: test_write_creates_file(1),test_write_valid_json_lines(1),test_includes_all_fields(1),test_includes_extra_fields(1),test_pretty_mode(1)
+    tmp_jsonl(tmp_path)
+    _make_entry()
+  tests/test_configure.py:
+    i: os,logging,pytest,sys,importlib,nfo.{Logger,configure,log_call,logged,skip}
+    e: MemorySink,TestParseSinkSpec,TestConfigure,TestLogged,TestStdlibBridge
+    MemorySink: __init__(0),write(1),close(0)
+    TestParseSinkSpec: test_sqlite(1),test_csv(1),test_md(1),test_invalid_no_colon(0),test_unknown_type(0)
+    TestConfigure: setup_method(0),test_returns_logger(0),test_with_sink_specs(1),test_with_sink_instances(0),test_env_override_level(1)
+    TestLogged: test_wraps_public_methods(0),test_skip_decorator(0),test_logged_with_level(0),test_logged_preserves_exceptions(0)
+    TestStdlibBridge: test_bridge_captures_stdlib_logs(0),test_bridge_qualified_function_name(0),test_bridge_multiple_loggers(0),test_bridge_no_duplicate_from_child_propagation(0),test_bridge_exception_info(0)
+  tests/test_sinks.py:
+    i: csv,os,sqlite3,tempfile,pytest,nfo.models.LogEntry,nfo.sinks.{CSVSink,MarkdownSink,SQLiteSink}
+    e: TestSQLiteSink,TestCSVSink,TestMarkdownSink
+    TestSQLiteSink: test_write_and_query(1),test_custom_table(1)
+    TestCSVSink: test_write_rows(1),test_does_not_duplicate_header(1)
+    TestMarkdownSink: test_write_entry(1),test_exception_block(1)
+    _make_entry()->LogEntry
+  tests/test_terminal.py:
+    i: io,datetime,pytest,datetime.timezone,nfo.models.LogEntry,nfo.terminal.TerminalSink
+    e: TestAsciiFormat,TestColorFormat,TestMarkdownFormat,TestToonFormat,TestTableFormat,TestSinkProperties
+    TestAsciiFormat: test_basic_output(0),test_exception_output(0),test_no_args(0),test_no_return(0),test_no_duration(0)
+    TestColorFormat: test_basic_output(0),test_slow_duration_highlighted(0),test_medium_duration(0),test_traceback_shown(0),test_exception_color(0)
+    TestMarkdownFormat: test_basic_output(0),test_error_output(0),test_shows_kwargs(0),test_duration_shown(0),test_meta_shown(0)
+    TestToonFormat: test_basic_output(0),test_exception_output(0),test_slow_duration(0),test_kwargs_shown(0),test_binary_meta(0)
+    TestTableFormat: test_basic_output(0),test_exception_in_table(0)
+    _make_entry(level='DEBUG';function_name='add';args=(3; 7);kwargs=None;return_value=10;duration_ms=1.5;...+1)
+  tests/test_meta.py:
+    i: io,sys,pytest,nfo.meta.{ThresholdPolicy,sizeof}
+    e: TestThresholdPolicy,TestSizeof
+    TestThresholdPolicy: test_default_thresholds(0),test_small_bytes_below_threshold(0),test_large_bytes_above_threshold(0),test_small_bytearray_below_threshold(0),test_large_bytearray_above_threshold(0)
+    TestSizeof: test_bytes(0),test_bytearray(0),test_memoryview(0),test_int(0),test_fallback_negative(0)
+  tests/test_click_integration.py:
+    i: io,click,pytest,click.testing.CliRunner,nfo.click.{NfoCommand,NfoGroup,nfo_options},nfo.logger.Logger,nfo.terminal.TerminalSink
+    e: TestNfoGroup,TestNfoCommand,TestNfoOptions,TestConfigureTerminalSpec
+    TestNfoGroup: test_group_logs_command(0),test_group_logs_error(0),test_group_duration_recorded(0),test_group_filters_nfo_params(0)
+    TestNfoCommand: test_command_logs_invocation(0),test_command_logs_error(0)
+    TestNfoOptions: test_adds_three_options(0),test_defaults(0),test_format_choices(0),test_level_choices(0)
+    TestConfigureTerminalSpec: test_parse_terminal_color(0),test_parse_terminal_markdown(0),test_parse_terminal_toon(0),test_parse_terminal_table(0),test_parse_terminal_ascii(0)
+  tests/test_webhook.py:
+    i: json,threading,pytest,http.server.{BaseHTTPRequestHandler,HTTPServer},nfo.models.LogEntry,nfo.webhook.WebhookSink,unittest.mock.{MagicMock,patch}
+    e: TestWebhookSink
+    TestWebhookSink: test_only_sends_configured_levels(0),test_sends_for_error_level(0),test_slack_payload_format(0),test_discord_payload_format(0),test_teams_payload_format(0)
+    _make_entry()
+  tests/test_decorators.py:
+    i: pytest,nfo.{Logger,catch,log_call},nfo.decorators.set_default_logger,nfo.models.LogEntry,nfo.sinks.Sink
+    e: MemorySink,logger,TestLogCall,TestCatch,TestAsyncLogCall,TestAsyncCatch,TestSampling
+    MemorySink: __init__(0),write(1),close(0)  # In-memory sink that collects entries...
+    TestLogCall: test_logs_args_and_return(1),test_logs_kwargs(1),test_logs_exception(1),test_custom_level(1),test_arg_types(1)
+    TestCatch: test_suppresses_exception(1),test_returns_default(1),test_success_path(1),test_max_repr_length_truncates_error_args(1)
+    TestAsyncLogCall: test_logs_async_return(1),test_logs_async_exception(1),test_async_custom_level(1),test_async_preserves_coroutine(1)
+    TestAsyncCatch: test_async_suppresses_exception(1),test_async_returns_default(1),test_async_success_path(1)
+    logger()
+  tests/test_meta_decorators.py:
+    i: pytest,nfo.Logger,nfo.decorators.set_default_logger,nfo.meta.ThresholdPolicy,nfo.meta_decorators.meta_log,nfo.models.LogEntry,nfo.sinks.Sink
+    e: MemorySink,logger,TestMetaLogSync,TestMetaLogAsync,TestMetaLogReturnMeta
+    MemorySink: __init__(0),write(1),close(0)
+    TestMetaLogSync: test_small_args_logged_as_repr(1),test_large_bytes_extracted_as_metadata(1),test_return_value_not_stored_raw(1),test_exception_logged_with_meta(1),test_custom_level(1)
+    TestMetaLogAsync: test_async_basic(1),test_async_exception(1),test_async_large_bytes(1),test_async_preserves_coroutine(1)
+    TestMetaLogReturnMeta: test_large_return_extracted(1),test_small_return_as_repr(1)
+    logger()
+  nfo/auto.py:
+    i: inspect,sys,types,nfo.decorators.log_call,nfo.models.DEFAULT_MAX_REPR_LENGTH,typing.{Any,Optional,Sequence,Union}
+    e: auto_log,auto_log_by_name
+    _should_patch(name:str;obj:Any;module_name:str;include_private:bool=False)->bool
+    auto_log()->int
+    auto_log_by_name()->int
+  nfo/llm.py:
+    i: re,threading,nfo.models.LogEntry,nfo.sinks.Sink,typing.{Any,Callable,Dict,List,Optional}
+    e: _INJECTION_PATTERNS,detect_prompt_injection,scan_entry_for_injection,_DEFAULT_SYSTEM_PROMPT,LLMSink
+    LLMSink: __init__(1),_build_user_prompt(1),_analyze(1),_process(1),write(1)  # Sink that sends ERROR-level log entri...
+    detect_prompt_injection(text:str)->Optional[str]
+    scan_entry_for_injection(entry:LogEntry)->Optional[str]
+  nfo/configure.py:
+    i: logging,os,sys,pathlib.Path,typing
+    e: get_global_meta_policy,configure
+    _StdlibBridge: __init__(1),emit(1)  # Bridge that intercepts stdlib logging...
+    get_global_meta_policy()->Optional[Any]
+    _parse_sink_spec(spec:str)->Sink
+    configure()->Logger
+  nfo/extractors.py:
+    i: hashlib,math,struct,collections.Counter,typing
+    e: MAGIC_SIGNATURES,detect_format,extract_image_meta,extract_binary_meta,extract_file_meta,extract_numpy_meta,extract_dataframe_meta,extract_wav_meta
+    detect_format(data:bytes)->Optional[str]
+    extract_image_meta(data:bytes)->Dict[str, Any]
+    extract_binary_meta(data:bytes)->Dict[str, Any]
+    extract_file_meta(file_obj:Any)->Dict[str, Any]
+    extract_numpy_meta(arr:Any)->Dict[str, Any]
+    extract_dataframe_meta(df:Any)->Dict[str, Any]
+    extract_wav_meta(data:bytes)->Dict[str, Any]
+    register_extractor(type_check:Callable[Any;bool];extractor:Callable[Any;Dict[str;Any]])->None
+  nfo/webhook.py:
+    i: json,threading,nfo.models.LogEntry,typing.{Any,Dict,List,Optional,Sequence},urllib.{error,request}
+    e: WebhookSink
+    WebhookSink: __init__(2),_build_payload(1),_send(1),write(1),close(0)  # Sink that POSTs log entries to an HTT...
+  nfo/buffered_sink.py:
+    i: atexit,collections,threading,time,nfo.models.LogEntry,nfo.sinks.Sink,typing.Optional
+    e: AsyncBufferedSink
+    AsyncBufferedSink: __init__(4),write(1),flush(0),close(0),pending(0)  # Buffer log entries and write them bat...
+  nfo/__init__.py:
+    i: nfo.{configure,logged},nfo.decorators.{catch,log_call},nfo.env.EnvTagger,nfo.logged.skip,nfo.logger.Logger,nfo.sinks.{CSVSink,MarkdownSink,SQLiteSink}
+    _lazy_click()
+    __getattr__(name:str)
+  nfo/ring_buffer_sink.py:
+    i: collections,threading,nfo.models.LogEntry,nfo.sinks.Sink,typing.{Optional,Sequence}
+    e: RingBufferSink
+    RingBufferSink: __init__(4),write(1),close(0),buffered(0),flush_count(0)  # In-memory ring buffer that flushes co...
+  nfo/__main__.py:
+    i: argparse,os,subprocess,sys,time,pathlib.Path
+    e: cmd_run,cmd_logs,cmd_version,cmd_serve,main
+    _setup_logger(sink_specs:list[str];env:Any=None)
+    cmd_run(args)
+    cmd_logs(args)
+    cmd_version(args)
+    cmd_serve(args)
+    _run_inline_server(host:str;port:int)
+    _detect_language(cmd:str)->str
+    _parse_duration(spec:str)->float
+  nfo/meta.py:
+    i: dataclasses,sys,typing.{Any,Optional}
+    e: ThresholdPolicy,sizeof
+    ThresholdPolicy: should_extract_meta(1),should_extract_return_meta(1)  # Policy deciding when to log full data...
+    sizeof(obj:Any)->int
+  nfo/binary_router.py:
+    i: nfo.models.LogEntry,nfo.sinks.Sink,typing.Optional
+    e: BinaryAwareRouter
+    BinaryAwareRouter: __init__(4),write(1),_has_large_data(1),close(0)  # Route log entries to different sinks...
+  nfo/models.py:
+    i: datetime,dataclasses.{dataclass,field},datetime.timezone,typing.{Any,Dict,List,Optional,Tuple}
+    e: DEFAULT_MAX_REPR_LENGTH,safe_repr,LogEntry
+    LogEntry: now(0),args_repr(0),kwargs_repr(0),return_value_repr(0),as_dict(0)  # A single log entry produced by a deco...
+    _truncate_text(text:str;max_length:Optional[int])->str
+    safe_repr(value:Any;max_length:Optional[int]=DEFAULT_MAX_REPR_LENGTH)->str
+  nfo/decorators.py:
+    i: functools,inspect,random,time,traceback,typing.{Any,Callable,Dict,Optional,TypeVar}
+    e: F,set_default_logger,log_call,log_call,log_call,catch,catch,catch
+    _get_default_logger()->Any
+    set_default_logger(logger:Any)->None
+    _arg_types(args:tuple;kwargs:dict)->tuple
+    _module_of(func:Callable)->str
+    _should_sample(sample_rate:Optional[float])->bool
+    _maybe_extract(args:tuple;kwargs:dict;result:Any;extract_meta_flag:bool;meta_policy:Any)->Optional[Dict[str, Any]]
+    log_call(func:F)->F
+    log_call()->Callable[[F], F]
+  nfo/terminal.py:
+    i: sys,threading,nfo.models.LogEntry,nfo.sinks.Sink,typing.{Optional,TextIO}
+    e: TerminalSink
+    TerminalSink: __init__(7),format(0),write(1),_write_ascii(1),_write_color(1)  # Sink that displays log entries in the...
+  nfo/env.py:
+    i: hashlib,os,threading,uuid,typing
+    e: generate_trace_id,EnvTagger,DynamicRouter,DiffTracker
+    EnvTagger: __init__(1),write(1),close(0)  # Sink wrapper that auto-tags every log...
+    DynamicRouter: __init__(2),write(1),close(0)  # Routes log entries to different sinks...
+    DiffTracker: __init__(1),_make_key(1),write(1),close(0)  # Tracks input/output changes between f...
+    _detect_environment()->str
+    _detect_trace_id()->Optional[str]
+    _detect_version()->Optional[str]
+    generate_trace_id()->str
+  nfo/meta_decorators.py:
+    i: functools,inspect,time,traceback,nfo.decorators._should_sample,typing.{Any,Callable,Dict,Optional,TypeVar}
+    e: F,DEFAULT_POLICY,meta_log
+    _extract_args_meta(args:tuple;param_names:list;policy:ThresholdPolicy;extract_fields:Optional[Dict[str;Callable]]=None)->list
+    _extract_kwargs_meta(kwargs:dict;policy:ThresholdPolicy;extract_fields:Optional[Dict[str;Callable]]=None)->dict
+    _extract_return_meta(value:Any;policy:ThresholdPolicy)->Any
+    _emit(entry:LogEntry;logger:Any)->None
+    meta_log(func:Optional[Callable]=None)->Any
+  nfo/prometheus.py:
+    i: threading,nfo.models.LogEntry,nfo.sinks.Sink,prometheus_client,typing.Optional
+    e: PrometheusSink
+    PrometheusSink: __init__(1),_start_server(1),write(1),close(0),get_metrics(0)  # Sink that exports nfo log entries as...
+  nfo/logged.py:
+    i: functools,nfo.decorators.log_call,nfo.models.DEFAULT_MAX_REPR_LENGTH,typing.{Any,Callable,Optional,TypeVar,overload}
+    e: C,skip,logged,logged,logged
+    _should_wrap(name:str;attr:Any)->bool
+    skip(func:Callable)->Callable
+    logged(cls:C)->C
+    logged()->Callable[[C], C]
+    logged(cls:Optional[C]=None)->Any
+  nfo/json_sink.py:
+    i: json,os,threading,nfo.models.LogEntry,nfo.sinks.Sink,pathlib.Path,typing.{Any,Dict,Optional,TextIO}
+    e: JSONSink
+    JSONSink: __init__(1),write(1),close(0)  # Append log entries as JSON Lines (one...
+  nfo/click.py:
+    i: time,traceback,click,nfo.logger.Logger,nfo.models.LogEntry,nfo.terminal.TerminalSink,typing.{Any,Optional}
+    e: NfoGroup,NfoCommand,nfo_options
+    NfoGroup: __init__(0),invoke(1),_resolve_logger(1)  # Click Group that automatically logs e...
+    NfoCommand: invoke(1)  # Click Command that logs its own invoc...
+    nfo_options(func:Any)->Any
+  nfo/logger.py:
+    i: logging,sys,nfo.models.LogEntry,nfo.sinks.Sink,typing.{List,Optional}
+    e: Logger
+    Logger: __init__(4),add_sink(1),remove_sink(1),emit(1),_format_stdlib(1)  # Central logger instance.
+  nfo/sinks.py:
+    i: csv,io,os,sqlite3,threading,abc.{ABC,abstractmethod},pathlib.Path,typing.{Any,Dict}
+    e: _COLUMNS,Sink,SQLiteSink,CSVSink,MarkdownSink
+    Sink: write(1),close(0)  # Base class for all sinks.
+    SQLiteSink: __init__(2),_get_conn(0),_ensure_table(0),write(1),close(0)  # Persist log entries to a SQLite datab...
+    CSVSink: __init__(1),_write_header_if_needed(0),write(1),close(0)  # Append log entries to a CSV file.
+    MarkdownSink: __init__(1),_write_header_if_needed(0),write(1),close(0)  # Append log entries to a Markdown file...
+  examples/http-service/main.py:
+    i: os,sqlite3,time,dotenv.load_dotenv,nfo.{CSVSink,Logger,SQLiteSink},pathlib.Path,typing.{List,Optional}
+    e: LOG_DIR,DB_PATH,CSV_PATH,JSONL_PATH,NFO_HOST,NFO_PORT,LogEntry,LogBatchRequest
+    LogEntry: 
+    LogBatchRequest: 
+    _store_entry(entry:LogEntry)->dict
+    log_call(entry:LogEntry)
+    log_batch(batch:LogBatchRequest)
+    get_logs(language:Optional[str]=Query(None);level:Optional[str]=Query(None);limit:int=Query(50; ge=1; le=1000))
+    health()
+  examples/auto-log/main.py:
+    i: nfo.{auto_log,configure,skip},pathlib.Path
+    e: DB_PATH,create_user,delete_user,calculate_total,health_check
+    create_user(name:str;email:str)->dict
+    delete_user(user_id:int)->bool
+    calculate_total(prices:list)->float
+    health_check()->str
+    _internal_helper()
+  examples/bash-wrapper/main.py:
+    i: os,subprocess,sys,nfo.{CSVSink,Logger,SQLiteSink,log_call},nfo.decorators.set_default_logger,pathlib.Path
+    e: DB_PATH,CSV_PATH,setup_logger,run_bash,main
+    setup_logger()->Logger
+    run_bash(script_path:str)->dict
+    main()
+  examples/sqlite-sink/main.py:
+    i: sqlite3,nfo.{Logger,SQLiteSink,catch,log_call},nfo.decorators.set_default_logger,pathlib.Path
+    e: DB_PATH,setup_logger,fetch_user,parse_config
+    setup_logger()->Logger
+    fetch_user(user_id:int)->dict
+    parse_config(raw:str)->dict
+  examples/go-client/main.go:
+    i: bytes
+    e: LogEntry,NfoClient,NewNfoClient,Log,LogCall,getEnv,main
+    LogEntry: 
+    NfoClient: 
+    NewNfoClient(baseURL string)
+    Log(entry LogEntry)->error
+    LogCall(cmd string;args []string;fn func()->(string, error)
+    getEnv(key;fallback string)->string
+    main()
+  examples/configure/main.py:
+    i: nfo.{catch,configure,log_call,logged},pathlib.Path
+    e: OUT,DB_PATH,CSV_PATH,process_order,parse_config,PaymentService
+    PaymentService: charge(1),refund(1)
+    process_order(order_id:str;amount:float)->dict
+    parse_config(raw:str)->dict
+  examples/rust-client/main.rs:
+    i: reqwest::Client,serde::{Deserialize, Serialize},std::env,std::time::Instant
+    e: LogEntry,LogResponse,NfoClient
+    LogEntry: 
+    LogResponse: 
+    NfoClient: 
+  examples/basic-usage/main.py:
+    i: nfo.{Logger,catch,log_call}
+    e: add,greet,risky_divide
+    add(a:int;b:int)->int
+    greet(name:str)->str
+    risky_divide(a:float;b:float)->float
+  examples/markdown-sink/main.py:
+    i: nfo.{Logger,MarkdownSink,catch,log_call},nfo.decorators.set_default_logger,pathlib.Path
+    e: MD_PATH,setup_logger,compute,dangerous
+    setup_logger()->Logger
+    compute(x:float;y:float)->float
+    dangerous(data:str)->dict
+  examples/csv-sink/main.py:
+    i: nfo.{CSVSink,Logger,log_call},nfo.decorators.set_default_logger,pathlib.Path
+    e: CSV_PATH,setup_logger,multiply,process_items
+    setup_logger()->Logger
+    multiply(a:int;b:int)->int
+    process_items(items:list)->int
+  examples/grpc-service/server.py:
+    i: os,sqlite3,sys,time,grpc,nfo_pb2,nfo_pb2_grpc,concurrent.futures,nfo.Logger,pathlib.Path
+    e: GRPC_PORT,LOG_DIR,DB_PATH,NfoLoggerServicer,serve
+    NfoLoggerServicer: LogCall(2),BatchLog(2),StreamLog(2),QueryLogs(2)  # Implementation of NfoLogger gRPC serv...
+    _store_request(req:Any)->nfo_pb2.LogResponse
+    serve(port:int=GRPC_PORT;max_workers:int=10)
+  examples/grpc-service/client.py:
+    i: os,sys,time,grpc,nfo_pb2,nfo_pb2_grpc,pathlib.Path
+    e: run_demo
+    run_demo(target:str='localhost:50051')
+  examples/grpc-service/nfo_pb2_grpc.py:
+    i: grpc,warnings,nfo_pb2,grpc._utilities.first_version_is_lower
+    e: GRPC_GENERATED_VERSION,GRPC_VERSION,NfoLoggerStub,NfoLoggerServicer,add_NfoLoggerServicer_to_server,NfoLogger
+    NfoLoggerStub: __init__(1)  # --- Service ---
+    NfoLoggerServicer: LogCall(2),BatchLog(2),StreamLog(2),QueryLogs(2)  # --- Service ---
+    NfoLogger: LogCall(8),BatchLog(8),StreamLog(8),QueryLogs(8)  # --- Service ---
+    add_NfoLoggerServicer_to_server(servicer;server)
+  examples/multi-sink/main.py:
+    i: nfo,nfo.decorators.set_default_logger,pathlib.Path
+    e: OUT,DB_PATH,CSV_PATH,MD_PATH,setup_logger,fibonacci,batch_process,parse_int
+    setup_logger()->Logger
+    fibonacci(n:int)->int
+    batch_process(items:list)->dict
+    parse_int(value:str)->int
+  examples/env-tagger/main.py:
+    i: nfo,pathlib.Path
+    e: OUT,PROD_DB,CI_CSV,ERRORS_DB,DEV_MD,demo_env_tagger,demo_dynamic_router,demo_diff_tracker
+    demo_env_tagger()
+    demo_dynamic_router()
+    demo_diff_tracker()
+  examples/env-config/main.py:
+    i: os,dotenv.load_dotenv,nfo.{catch,configure,log_call,logged},pathlib.Path
+    e: create_order,parse_payload,InventoryService
+    InventoryService: check_stock(1),reserve(2)
+    create_order(order_id:str;amount:float)->dict
+    parse_payload(raw:str)->dict
+  examples/click-integration/demo_basic.py:
+    i: time,click,nfo.click.{NfoGroup,nfo_options}
+    e: cli,greet,process,deploy,fail
+    cli()
+    greet(name)
+    process(count)
+    deploy(path;force)
+    fail()
+  examples/click-integration/demo_configure.py:
+    i: click,nfo.{configure,log_call}
+    e: cli,deploy,migrate
+    cli()
+    deploy(target;force)
+    migrate(db_path)
+  examples/click-integration/demo_formats.py:
+    i: io,datetime,datetime.timezone,nfo.models.LogEntry,nfo.terminal.TerminalSink
+    e: make_entry,demo
+    make_entry(function_name='deploy';args=('prod';);kwargs=None;return_value=None;duration_ms=2300.0;exception=None;...+1)
+    demo()
+  examples/async-usage/main.py:
+    i: asyncio,nfo.{Logger,SQLiteSink,catch,log_call},nfo.decorators.set_default_logger,pathlib.Path
+    e: DB_PATH,setup_logger,fetch_data,process_batch,risky_fetch,main
+    setup_logger()->Logger
+    fetch_data(url:str)->dict
+    process_batch(items:list)->int
+    risky_fetch(url:str)->dict
+    main()

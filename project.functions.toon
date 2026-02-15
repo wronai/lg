@@ -1,32 +1,48 @@
 project: nfo
-generated: "2026-02-15T08:33:20.995003"
-modules[46]{path,lang,items}:
+generated: "2026-02-15T09:43:36.947102"
+modules[65]{path,lang,items}:
   demo/app.py,python,13
   demo/load_generator.py,python,2
   tests/test_prometheus.py,python,10
   tests/test_auto.py,python,17
+  tests/test_binary_router.py,python,13
   tests/test_env.py,python,23
+  tests/test_extractors.py,python,42
   tests/test_llm.py,python,19
+  tests/test_buffered_sink.py,python,16
+  tests/test_ring_buffer_sink.py,python,17
   tests/__init__.py,python,0
   tests/test_json_sink.py,python,10
   tests/test_configure.py,python,24
   tests/test_sinks.py,python,7
+  tests/test_terminal.py,python,30
+  tests/test_meta.py,python,20
+  tests/test_click_integration.py,python,16
   tests/test_webhook.py,python,11
-  tests/test_decorators.py,python,21
+  tests/test_decorators.py,python,29
+  tests/test_meta_decorators.py,python,18
   tools/sync_pactown_com_dependency.py,python,0
   nfo/auto.py,python,3
   nfo/llm.py,python,8
-  nfo/configure.py,python,4
+  nfo/configure.py,python,5
+  nfo/extractors.py,python,10
   nfo/webhook.py,python,5
-  nfo/__init__.py,python,1
+  nfo/buffered_sink.py,python,7
+  nfo/__init__.py,python,2
+  nfo/ring_buffer_sink.py,python,6
   nfo/setup.py,python,0
   nfo/__main__.py,python,9
+  nfo/meta.py,python,3
+  nfo/binary_router.py,python,4
   nfo/models.py,python,7
-  nfo/decorators.py,python,10
+  nfo/decorators.py,python,12
+  nfo/terminal.py,python,9
   nfo/env.py,python,14
+  nfo/meta_decorators.py,python,5
   nfo/prometheus.py,python,5
   nfo/logged.py,python,5
   nfo/json_sink.py,python,3
+  nfo/click.py,python,5
   nfo/logger.py,python,6
   nfo/sinks.py,python,15
   examples/http-service/main.py,python,5
@@ -46,6 +62,9 @@ modules[46]{path,lang,items}:
   examples/multi-sink/main.py,python,4
   examples/env-tagger/main.py,python,3
   examples/env-config/main.py,python,4
+  examples/click-integration/demo_basic.py,python,5
+  examples/click-integration/demo_configure.py,python,3
+  examples/click-integration/demo_formats.py,python,2
   examples/async-usage/main.py,python,5
 
 function_details:
@@ -99,6 +118,21 @@ function_details:
       TestAutoLogByName.test_patches_by_module_name,method,(),221-243,false,23,1,checks patches by module name
       TestAutoLogByName.test_skips_missing_modules,method,(),245-249,false,5,1,checks skips missing modules
       TestAutoLogByName.test_multiple_modules_by_name,method,(),251-279,false,29,1,checks multiple modules by name
+  tests/test_binary_router.py:
+    functions[13]{name,kind,sig,loc,async,lines,cc,does}:
+      _make_entry,function,() -> LogEntry,22-37,false,16,1,creates entry
+      MemorySink.__init__,method,(),11-13,false,3,1,creates
+      MemorySink.write,method,"(entry:LogEntry) -> None",15-16,false,2,1,logs
+      MemorySink.close,method,() -> None,18-19,false,2,1,stops
+      TestBinaryAwareRouter.test_meta_log_routes_to_lightweight,method,(),42-51,false,10,1,checks meta log routes to lightweight
+      TestBinaryAwareRouter.test_normal_entry_routes_to_full,method,(),53-62,false,10,1,checks normal entry routes to full
+      TestBinaryAwareRouter.test_large_data_routes_to_heavy,method,(),64-80,false,17,1,checks large data routes to heavy
+      TestBinaryAwareRouter.test_large_data_no_heavy_sink_falls_to_full,method,(),82-95,false,14,1,checks large data no heavy sink falls to full
+      TestBinaryAwareRouter.test_large_return_value_routes_to_heavy,method,(),97-111,false,15,1,checks large return value routes to heavy
+      TestBinaryAwareRouter.test_close_closes_all_sinks,method,(),113-126,false,14,1,checks close closes all sinks
+      TestBinaryAwareRouter.test_close_without_heavy,method,(),128-135,false,8,1,checks close without heavy
+      TestBinaryAwareRouter.test_mixed_entries_routed_correctly,method,(),137-159,false,23,1,checks mixed entries routed correctly
+      TestBinaryAwareRouter.test_small_binary_not_routed_to_heavy,method,(),161-176,false,16,1,checks small binary not routed to heavy
   tests/test_env.py:
     functions[23]{name,kind,sig,loc,async,lines,cc,does}:
       _make_entry,function,() -> LogEntry,27-42,false,16,1,creates entry
@@ -124,6 +158,50 @@ function_details:
       TestDiffTracker.test_no_diff_without_version,method,(),201-208,false,8,1,checks no diff without version
       TestDiffTracker.test_different_functions_no_diff,method,(),210-217,false,8,1,checks different functions no diff
       TestDiffTracker.test_close_delegates,method,(),219-222,false,4,1,checks close delegates
+  tests/test_extractors.py:
+    functions[42]{name,kind,sig,loc,async,lines,cc,does}:
+      _make_png,function,"(width:int=100, height:int=200) -> bytes",27-34,false,8,1,Build minimal PNG header (first 24 bytes).
+      _make_jpeg,function,"(width:int=640, height:int=480) -> bytes",37-47,false,11,1,Build minimal JPEG with SOF0 marker.
+      _make_bmp,function,"(width:int=320, height:int=240) -> bytes",50-55,false,6,1,Build minimal BMP header.
+      _make_wav,function,"(channels:int=2, sample_rate:int=44100, bits:int=16, data_size:int=88200) -> bytes",58-73,false,16,1,Build minimal WAV header (44 bytes RIFF/WAVE).
+      TestDetectFormat.test_png,method,(),82-83,false,2,1,checks png
+      TestDetectFormat.test_jpeg,method,(),85-86,false,2,1,checks jpeg
+      TestDetectFormat.test_bmp,method,(),88-89,false,2,1,checks bmp
+      TestDetectFormat.test_gzip,method,(),91-92,false,2,1,checks gzip
+      TestDetectFormat.test_pdf,method,(),94-95,false,2,1,checks pdf
+      TestDetectFormat.test_unknown,method,(),97-98,false,2,1,checks unknown
+      TestDetectFormat.test_empty,method,(),100-101,false,2,1,checks empty
+      TestDetectFormat.test_wav,method,(),103-104,false,2,1,checks wav
+      TestExtractImageMeta.test_png_dimensions,method,(),113-120,false,8,1,checks png dimensions
+      TestExtractImageMeta.test_jpeg_dimensions,method,(),122-126,false,5,1,checks jpeg dimensions
+      TestExtractImageMeta.test_bmp_dimensions,method,(),128-132,false,5,1,checks bmp dimensions
+      TestExtractImageMeta.test_size_bytes,method,(),134-137,false,4,1,checks size bytes
+      TestExtractBinaryMeta.test_basic_fields,method,(),146-152,false,7,1,checks basic fields
+      TestExtractBinaryMeta.test_high_entropy_detection,method,(),154-160,false,7,1,checks high entropy detection
+      TestExtractBinaryMeta.test_low_entropy,method,(),162-166,false,5,1,checks low entropy
+      TestExtractBinaryMeta.test_empty_bytes,method,(),168-171,false,4,1,checks empty bytes
+      TestExtractBinaryMeta.test_known_format_detection,method,(),173-176,false,4,1,checks known format detection
+      TestExtractFileMeta.test_bytesio,method,(),185-193,false,9,1,checks bytesio
+      TestExtractFileMeta.test_stringio,method,(),195-199,false,5,1,checks stringio
+      TestExtractFileMeta.test_real_file,method,(tmp_path),201-209,false,9,1,checks real file
+      TestExtractWavMeta.test_stereo_44100,method,(),218-226,false,9,1,checks stereo 44100
+      TestExtractWavMeta.test_mono_16000,method,(),228-233,false,6,1,checks mono 16000
+      TestExtractNumpyMeta.test_duck_typed_ndarray,method,(),242-258,false,17,1,checks duck typed ndarray
+      TestExtractMeta.test_png_auto_detected,method,(),267-270,false,4,1,checks png auto detected
+      TestExtractMeta.test_wav_auto_detected,method,(),272-275,false,4,1,checks wav auto detected
+      TestExtractMeta.test_generic_bytes,method,(),277-279,false,3,1,checks generic bytes
+      TestExtractMeta.test_memoryview,method,(),281-283,false,3,1,checks memoryview
+      TestExtractMeta.test_file_like,method,(),285-287,false,3,1,checks file like
+      TestExtractMeta.test_int_returns_none,method,(),289-290,false,2,1,checks int returns none
+      TestExtractMeta.test_string_returns_none,method,(),292-293,false,2,1,checks string returns none
+      TestExtractMeta.test_list_returns_none,method,(),295-296,false,2,1,checks list returns none
+      TestExtractMeta.test_none_returns_none,method,(),298-299,false,2,1,checks none returns none
+      TestCustomExtractors.setup_method,method,(),308-309,false,2,1,initializes method
+      TestCustomExtractors.teardown_method,method,(),311-312,false,2,1,teardown method
+      TestCustomExtractors.test_register_and_use,method,(),314-329,false,16,1,checks register and use
+      TestCustomExtractors.test_custom_takes_priority,method,(),331-339,false,9,1,checks custom takes priority
+      TestCustomExtractors.test_failing_check_is_skipped,method,(),341-348,false,8,1,checks failing check is skipped
+      TestCustomExtractors.test_unregister_all,method,(),350-357,false,8,1,checks unregister all
   tests/test_llm.py:
     functions[19]{name,kind,sig,loc,async,lines,cc,does}:
       _make_entry,function,() -> LogEntry,26-42,false,17,1,creates entry
@@ -145,6 +223,43 @@ function_details:
       TestLLMSink.test_analyze_levels_filter,method,(),131-145,false,15,1,checks analyze levels filter
       TestLLMSink.test_build_user_prompt,method,(),147-154,false,8,1,checks build user prompt
       TestLLMSink.test_close_delegates,method,(),156-160,false,5,1,checks close delegates
+  tests/test_buffered_sink.py:
+    functions[16]{name,kind,sig,loc,async,lines,cc,does}:
+      _make_entry,function,() -> LogEntry,32-47,false,16,1,creates entry
+      MemorySink.__init__,method,(),14-17,false,4,1,creates
+      MemorySink.write,method,"(entry:LogEntry) -> None",19-21,false,3,1,logs
+      MemorySink.close,method,() -> None,23-24,false,2,1,stops
+      MemorySink.count,method,() -> int,27-29,false,3,1,count
+      TestAsyncBufferedSink.test_flush_on_buffer_full,method,(),52-63,false,12,1,checks flush on buffer full
+      TestAsyncBufferedSink.test_flush_on_interval,method,(),65-74,false,10,1,checks flush on interval
+      TestAsyncBufferedSink.test_flush_on_error_entry,method,(),76-85,false,10,1,checks flush on error entry
+      TestAsyncBufferedSink.test_no_flush_on_error_when_disabled,method,(),87-95,false,9,1,checks no flush on error when disabled
+      TestAsyncBufferedSink.test_close_flushes_remaining,method,(),97-104,false,8,1,checks close flushes remaining
+      TestAsyncBufferedSink.test_manual_flush,method,(),106-116,false,11,1,checks manual flush
+      TestAsyncBufferedSink.test_pending_count,method,(),118-130,false,13,1,checks pending count
+      TestAsyncBufferedSink.test_write_after_close_ignored,method,(),132-137,false,6,1,checks write after close ignored
+      TestAsyncBufferedSink.test_idempotent_close,method,(),139-145,false,7,1,checks idempotent close
+      TestAsyncBufferedSink.test_delegate_write_exception_does_not_crash,method,(),147-157,false,11,1,checks delegate write exception does not crash
+      TestAsyncBufferedSink.test_critical_entry_also_flushes,method,(),159-167,false,9,1,checks critical entry also flushes
+  tests/test_ring_buffer_sink.py:
+    functions[17]{name,kind,sig,loc,async,lines,cc,does}:
+      _make_entry,function,() -> LogEntry,22-37,false,16,1,creates entry
+      MemorySink.__init__,method,(),11-13,false,3,1,creates
+      MemorySink.write,method,"(entry:LogEntry) -> None",15-16,false,2,1,logs
+      MemorySink.close,method,() -> None,18-19,false,2,1,stops
+      TestRingBufferSink.test_normal_entries_buffered_not_written,method,(),42-49,false,8,1,checks normal entries buffered not written
+      TestRingBufferSink.test_error_flushes_context_plus_error,method,(),51-63,false,13,1,checks error flushes context plus error
+      TestRingBufferSink.test_critical_also_flushes,method,(),65-71,false,7,1,checks critical also flushes
+      TestRingBufferSink.test_custom_trigger_levels,method,(),73-80,false,8,1,checks custom trigger levels
+      TestRingBufferSink.test_error_does_not_trigger_with_custom_levels,method,(),82-88,false,7,1,checks error does not trigger with custom levels
+      TestRingBufferSink.test_capacity_evicts_oldest,method,(),90-102,false,13,1,checks capacity evicts oldest
+      TestRingBufferSink.test_include_trigger_false,method,(),104-111,false,8,1,checks include trigger false
+      TestRingBufferSink.test_buffer_cleared_after_flush,method,(),113-122,false,10,1,checks buffer cleared after flush
+      TestRingBufferSink.test_multiple_errors,method,(),124-132,false,9,1,checks multiple errors
+      TestRingBufferSink.test_close_clears_buffer_and_closes_delegate,method,(),134-140,false,7,1,checks close clears buffer and closes delegate
+      TestRingBufferSink.test_capacity_property,method,(),142-145,false,4,1,checks capacity property
+      TestRingBufferSink.test_empty_buffer_error_only_writes_error,method,(),147-152,false,6,1,checks empty buffer error only writes error
+      TestRingBufferSink.test_case_insensitive_trigger,method,(),154-159,false,6,1,checks case insensitive trigger
   tests/test_json_sink.py:
     functions[10]{name,kind,sig,loc,async,lines,cc,does}:
       tmp_jsonl,function,(tmp_path),14-15,false,2,1,tmp jsonl
@@ -192,6 +307,78 @@ function_details:
       TestCSVSink.test_does_not_duplicate_header,method,(tmp_path),79-93,false,15,3,checks does not duplicate header
       TestMarkdownSink.test_write_entry,method,(tmp_path),100-109,false,10,1,checks write entry
       TestMarkdownSink.test_exception_block,method,(tmp_path),111-123,false,13,1,checks exception block
+  tests/test_terminal.py:
+    functions[30]{name,kind,sig,loc,async,lines,cc,does}:
+      _make_entry,function,"(level='DEBUG', function_name='add', args=(3, 7), kwargs=None, return_value=10, duration_ms=1.5, exception=None, exception_type=None)",12-39,false,28,4,creates entry
+      TestAsciiFormat.test_basic_output,method,(),48-57,false,10,1,checks basic output
+      TestAsciiFormat.test_exception_output,method,(),59-69,false,11,1,checks exception output
+      TestAsciiFormat.test_no_args,method,(),71-76,false,6,1,checks no args
+      TestAsciiFormat.test_no_return,method,(),78-83,false,6,1,checks no return
+      TestAsciiFormat.test_no_duration,method,(),85-90,false,6,1,checks no duration
+      TestColorFormat.test_basic_output,method,(),99-105,false,7,1,checks basic output
+      TestColorFormat.test_slow_duration_highlighted,method,(),107-112,false,6,1,checks slow duration highlighted
+      TestColorFormat.test_medium_duration,method,(),114-119,false,6,1,checks medium duration
+      TestColorFormat.test_traceback_shown,method,(),121-132,false,12,1,checks traceback shown
+      TestColorFormat.test_exception_color,method,(),134-144,false,11,1,checks exception color
+      TestMarkdownFormat.test_basic_output,method,(),153-159,false,7,1,checks basic output
+      TestMarkdownFormat.test_error_output,method,(),161-172,false,12,1,checks error output
+      TestMarkdownFormat.test_shows_kwargs,method,(),174-179,false,6,2,checks shows kwargs
+      TestMarkdownFormat.test_duration_shown,method,(),181-186,false,6,1,checks duration shown
+      TestMarkdownFormat.test_meta_shown,method,(),188-193,false,6,1,checks meta shown
+      TestToonFormat.test_basic_output,method,(),202-211,false,10,1,checks basic output
+      TestToonFormat.test_exception_output,method,(),213-223,false,11,1,checks exception output
+      TestToonFormat.test_slow_duration,method,(),225-230,false,6,1,checks slow duration
+      TestToonFormat.test_kwargs_shown,method,(),232-237,false,6,1,checks kwargs shown
+      TestToonFormat.test_binary_meta,method,(),239-251,false,13,1,checks binary meta
+      TestTableFormat.test_basic_output,method,(),260-266,false,7,1,checks basic output
+      TestTableFormat.test_exception_in_table,method,(),268-278,false,11,1,checks exception in table
+      TestSinkProperties.test_format_property,method,(),287-289,false,3,1,checks format property
+      TestSinkProperties.test_unknown_format_falls_back_to_ascii,method,(),291-296,false,6,1,checks unknown format falls back to ascii
+      TestSinkProperties.test_delegate_receives_entry,method,(),298-305,false,8,1,checks delegate receives entry
+      TestSinkProperties.test_close_closes_delegate,method,(),307-318,false,12,1,checks close closes delegate
+      TestSinkProperties.test_close_without_delegate,method,(),320-322,false,3,1,checks close without delegate
+      TestSinkProperties.test_none_duration,method,(),324-329,false,6,1,checks none duration
+      TestSinkProperties.test_none_return_value,method,(),331-336,false,6,1,checks none return value
+  tests/test_meta.py:
+    functions[20]{name,kind,sig,loc,async,lines,cc,does}:
+      TestThresholdPolicy.test_default_thresholds,method,(),13-17,false,5,1,checks default thresholds
+      TestThresholdPolicy.test_small_bytes_below_threshold,method,(),19-21,false,3,1,checks small bytes below threshold
+      TestThresholdPolicy.test_large_bytes_above_threshold,method,(),23-25,false,3,1,checks large bytes above threshold
+      TestThresholdPolicy.test_small_bytearray_below_threshold,method,(),27-29,false,3,1,checks small bytearray below threshold
+      TestThresholdPolicy.test_large_bytearray_above_threshold,method,(),31-33,false,3,1,checks large bytearray above threshold
+      TestThresholdPolicy.test_memoryview_above_threshold,method,(),35-38,false,4,1,checks memoryview above threshold
+      TestThresholdPolicy.test_memoryview_below_threshold,method,(),40-43,false,4,1,checks memoryview below threshold
+      TestThresholdPolicy.test_small_string_below_threshold,method,(),45-47,false,3,1,checks small string below threshold
+      TestThresholdPolicy.test_large_string_above_threshold,method,(),49-51,false,3,1,checks large string above threshold
+      TestThresholdPolicy.test_file_like_always_extracts,method,(),53-56,false,4,1,checks file like always extracts
+      TestThresholdPolicy.test_int_never_extracts,method,(),58-60,false,3,1,checks int never extracts
+      TestThresholdPolicy.test_list_never_extracts,method,(),62-64,false,3,1,checks list never extracts
+      TestThresholdPolicy.test_none_never_extracts,method,(),66-68,false,3,1,checks none never extracts
+      TestThresholdPolicy.test_should_extract_return_meta_uses_return_threshold,method,(),70-76,false,7,1,checks should extract return meta uses return threshold
+      TestThresholdPolicy.test_custom_thresholds,method,(),78-81,false,4,1,checks custom thresholds
+      TestSizeof.test_bytes,method,(),86-87,false,2,1,checks bytes
+      TestSizeof.test_bytearray,method,(),89-90,false,2,1,checks bytearray
+      TestSizeof.test_memoryview,method,(),92-93,false,2,1,checks memoryview
+      TestSizeof.test_int,method,(),95-97,false,3,1,checks int
+      TestSizeof.test_fallback_negative,method,(),99-103,false,5,1,checks fallback negative
+  tests/test_click_integration.py:
+    functions[16]{name,kind,sig,loc,async,lines,cc,does}:
+      TestNfoGroup.test_group_logs_command,method,(),20-46,false,27,1,NfoGroup should emit a log entry when a command completes.
+      TestNfoGroup.test_group_logs_error,method,(),48-73,false,26,3,NfoGroup should log ERROR when a command raises.
+      TestNfoGroup.test_group_duration_recorded,method,(),75-98,false,24,1,Duration should be recorded in the log entry.
+      TestNfoGroup.test_group_filters_nfo_params,method,(),100-125,false,26,3,nfo_* params should not appear in logged kwargs.
+      TestNfoCommand.test_command_logs_invocation,method,(),134-156,false,23,1,NfoCommand should log its own invocation.
+      TestNfoCommand.test_command_logs_error,method,(),158-182,false,25,3,NfoCommand should log ERROR on exception.
+      TestNfoOptions.test_adds_three_options,method,(),191-206,false,16,1,"nfo_options should add --nfo-sink, --nfo-format, --nfo-level."
+      TestNfoOptions.test_defaults,method,(),208-219,false,12,1,"Defaults: empty sink, color format, DEBUG level."
+      TestNfoOptions.test_format_choices,method,(),221-231,false,11,1,Invalid format should be rejected.
+      TestNfoOptions.test_level_choices,method,(),233-243,false,11,1,Invalid level should be rejected.
+      TestConfigureTerminalSpec.test_parse_terminal_color,method,(),252-256,false,5,1,checks parse terminal color
+      TestConfigureTerminalSpec.test_parse_terminal_markdown,method,(),258-262,false,5,1,checks parse terminal markdown
+      TestConfigureTerminalSpec.test_parse_terminal_toon,method,(),264-268,false,5,1,checks parse terminal toon
+      TestConfigureTerminalSpec.test_parse_terminal_table,method,(),270-274,false,5,1,checks parse terminal table
+      TestConfigureTerminalSpec.test_parse_terminal_ascii,method,(),276-280,false,5,1,checks parse terminal ascii
+      TestConfigureTerminalSpec.test_parse_terminal_unknown_defaults_to_color,method,(),282-286,false,5,1,checks parse terminal unknown defaults to color
   tests/test_webhook.py:
     functions[11]{name,kind,sig,loc,async,lines,cc,does}:
       _make_entry,function,(),14-32,false,19,1,creates entry
@@ -206,7 +393,7 @@ function_details:
       TestWebhookSink.test_custom_levels,method,(),110-115,false,6,1,checks custom levels
       TestWebhookSink.test_fire_and_forget_no_crash,method,(),117-122,false,6,1,Should not crash even if URL is unreachable.
   tests/test_decorators.py:
-    functions[21]{name,kind,sig,loc,async,lines,cc,does}:
+    functions[29]{name,kind,sig,loc,async,lines,cc,does}:
       logger,function,(),25-30,false,6,1,logger
       MemorySink.__init__,method,(),14-15,false,2,1,creates
       MemorySink.write,method,"(entry:LogEntry) -> None",17-18,false,2,1,logs
@@ -228,6 +415,34 @@ function_details:
       TestAsyncCatch.test_async_suppresses_exception,method,(logger),235-244,true,10,1,checks async suppresses exception
       TestAsyncCatch.test_async_returns_default,method,(logger),247-254,true,8,1,checks async returns default
       TestAsyncCatch.test_async_success_path,method,(logger),257-265,true,9,1,checks async success path
+      TestSampling.test_sample_rate_none_logs_everything,method,(logger),272-281,false,10,2,checks sample rate none logs everything
+      TestSampling.test_sample_rate_one_logs_everything,method,(logger),283-292,false,10,2,checks sample rate one logs everything
+      TestSampling.test_sample_rate_zero_logs_nothing,method,(logger),294-303,false,10,2,checks sample rate zero logs nothing
+      TestSampling.test_sample_rate_zero_still_logs_errors,method,(logger),305-316,false,12,3,checks sample rate zero still logs errors
+      TestSampling.test_sample_rate_partial,method,(logger),318-331,false,14,2,"With sample_rate=0.5, roughly half should be logged (statistical)."
+      TestSampling.test_sample_rate_return_value_preserved,method,(logger),333-340,false,8,1,checks sample rate return value preserved
+      TestSampling.test_catch_sample_rate_zero_logs_nothing_on_success,method,(logger),342-350,false,9,1,checks catch sample rate zero logs nothing on success
+      TestSampling.test_catch_sample_rate_zero_still_logs_errors,method,(logger),352-361,false,10,1,checks catch sample rate zero still logs errors
+  tests/test_meta_decorators.py:
+    functions[18]{name,kind,sig,loc,async,lines,cc,does}:
+      logger,function,(),25-30,false,6,1,logger
+      MemorySink.__init__,method,(),14-15,false,2,1,creates
+      MemorySink.write,method,"(entry:LogEntry) -> None",17-18,false,2,1,logs
+      MemorySink.close,method,() -> None,20-21,false,2,1,stops
+      TestMetaLogSync.test_small_args_logged_as_repr,method,(logger),35-51,false,17,1,checks small args logged as repr
+      TestMetaLogSync.test_large_bytes_extracted_as_metadata,method,(logger),53-74,false,22,1,checks large bytes extracted as metadata
+      TestMetaLogSync.test_return_value_not_stored_raw,method,(logger),76-88,false,13,1,checks return value not stored raw
+      TestMetaLogSync.test_exception_logged_with_meta,method,(logger),90-104,false,15,1,checks exception logged with meta
+      TestMetaLogSync.test_custom_level,method,(logger),106-114,false,9,1,checks custom level
+      TestMetaLogSync.test_extract_fields_custom,method,(logger),116-131,false,16,1,checks extract fields custom
+      TestMetaLogSync.test_duration_recorded,method,(logger),133-142,false,10,1,checks duration recorded
+      TestMetaLogSync.test_function_name_captured,method,(logger),144-152,false,9,1,checks function name captured
+      TestMetaLogAsync.test_async_basic,method,(logger),158-169,true,12,1,checks async basic
+      TestMetaLogAsync.test_async_exception,method,(logger),172-183,true,12,1,checks async exception
+      TestMetaLogAsync.test_async_large_bytes,method,(logger),186-201,true,16,1,checks async large bytes
+      TestMetaLogAsync.test_async_preserves_coroutine,method,(logger),204-211,true,8,1,checks async preserves coroutine
+      TestMetaLogReturnMeta.test_large_return_extracted,method,(logger),216-228,false,13,1,checks large return extracted
+      TestMetaLogReturnMeta.test_small_return_as_repr,method,(logger),230-239,false,10,1,checks small return as repr
   nfo/auto.py:
     functions[3]{name,kind,sig,loc,async,lines,cc,does}:
       _should_patch,function,"(name:str, obj:Any, module_name:str, include_private:bool=False) -> bool",33-55,false,23,12,Determine if an object should be auto-patched with logging.
@@ -244,11 +459,24 @@ function_details:
       LLMSink.write,method,"(entry:LogEntry) -> None",189-194,false,6,2,logs
       LLMSink.close,method,() -> None,196-198,false,3,2,stops
   nfo/configure.py:
-    functions[4]{name,kind,sig,loc,async,lines,cc,does}:
-      _parse_sink_spec,function,"(spec:str) -> Sink",25-52,false,28,8,"Parse a sink specification string like 'sqlite:logs.db' or 'csv:logs.csv'."
-      configure,function,() -> Logger,104-278,false,175,33,Configure nfo logging for the entire project.
-      _StdlibBridge.__init__,method,"(nfo_logger:Logger) -> None",65-67,false,3,1,creates
-      _StdlibBridge.emit,method,"(record:Any) -> None",69-101,false,33,13,sends
+    functions[5]{name,kind,sig,loc,async,lines,cc,does}:
+      get_global_meta_policy,function,"() -> Optional[Any]",26-28,false,3,1,"Return the globally configured :class:`~nfo.meta.ThresholdPolicy` (if any)."
+      _parse_sink_spec,function,"(spec:str) -> Sink",31-62,false,32,10,"Parse a sink specification string like 'sqlite:logs.db' or 'csv:logs.csv'."
+      configure,function,() -> Logger,114-321,false,208,36,Configure nfo logging for the entire project.
+      _StdlibBridge.__init__,method,"(nfo_logger:Logger) -> None",75-77,false,3,1,creates
+      _StdlibBridge.emit,method,"(record:Any) -> None",79-111,false,33,13,sends
+  nfo/extractors.py:
+    functions[10]{name,kind,sig,loc,async,lines,cc,does}:
+      detect_format,function,"(data:bytes) -> Optional[str]",39-44,false,6,3,Detect file format from magic bytes.
+      extract_image_meta,function,"(data:bytes) -> Dict[str, Any]",52-79,false,28,10,Extract metadata from an image without external dependencies.
+      extract_binary_meta,function,"(data:bytes) -> Dict[str, Any]",82-98,false,17,4,General metadata for arbitrary binary data.
+      extract_file_meta,function,"(file_obj:Any) -> Dict[str, Any]",101-118,false,18,7,Metadata from a file-like object (without reading its contents).
+      extract_numpy_meta,function,"(arr:Any) -> Dict[str, Any]",121-136,false,16,3,Metadata from a numpy ndarray (duck-typed).
+      extract_dataframe_meta,function,"(df:Any) -> Dict[str, Any]",139-150,false,12,4,Metadata from a pandas DataFrame (duck-typed).
+      extract_wav_meta,function,"(data:bytes) -> Dict[str, Any]",153-167,false,15,7,Extract metadata from WAV file header.
+      register_extractor,function,"(type_check:Callable[Any,bool], extractor:Callable[Any,Dict[str,Any]]) -> None",177-187,false,11,1,Register a custom metadata extractor.
+      unregister_all_extractors,function,() -> None,190-192,false,3,1,Remove all custom extractors (useful in tests).
+      extract_meta,function,"(value:Any) -> Optional[Dict[str, Any]]",200-243,false,44,17,Auto-detect value type and extract metadata.
   nfo/webhook.py:
     functions[5]{name,kind,sig,loc,async,lines,cc,does}:
       WebhookSink.__init__,method,"(url:str, delegate:Optional[Sink]=None) -> None",36-52,false,17,4,creates
@@ -256,9 +484,27 @@ function_details:
       WebhookSink._send,method,"(payload:Dict[str,Any]) -> None",109-121,false,13,2,"Send payload via HTTP POST (fire-and-forget, no crash on failure)."
       WebhookSink.write,method,"(entry:LogEntry) -> None",123-131,false,9,3,logs
       WebhookSink.close,method,() -> None,133-135,false,3,2,stops
+  nfo/buffered_sink.py:
+    functions[7]{name,kind,sig,loc,async,lines,cc,does}:
+      AsyncBufferedSink.__init__,method,"(delegate:Sink, buffer_size:int=100, flush_interval:float=1.0, flush_on_error:bool=True) -> None",32-53,false,22,1,creates
+      AsyncBufferedSink.write,method,"(entry:LogEntry) -> None",57-67,false,11,5,logs
+      AsyncBufferedSink.flush,method,() -> None,69-71,false,3,1,Force an immediate flush of the buffer (blocking).
+      AsyncBufferedSink.close,method,() -> None,73-80,false,8,2,stops
+      AsyncBufferedSink.pending,method,() -> int,83-85,false,3,1,Number of entries waiting to be flushed.
+      AsyncBufferedSink._flush_loop,method,() -> None,89-93,false,5,2,flush loop
+      AsyncBufferedSink._do_flush,method,() -> None,95-105,false,11,4,do flush
   nfo/__init__.py:
-    functions[1]{name,kind,sig,loc,async,lines,cc,does}:
-      __getattr__,function,"(name:str)",19-23,false,5,2,getattr
+    functions[2]{name,kind,sig,loc,async,lines,cc,does}:
+      _lazy_click,function,(),26-28,false,3,1,lazy click
+      __getattr__,function,"(name:str)",31-38,false,8,3,getattr
+  nfo/ring_buffer_sink.py:
+    functions[6]{name,kind,sig,loc,async,lines,cc,does}:
+      RingBufferSink.__init__,method,"(delegate:Sink, capacity:int=1000, trigger_levels:Optional[Sequence[str]]=None, include_trigger:bool=True) -> None",30-44,false,15,3,creates
+      RingBufferSink.write,method,"(entry:LogEntry) -> None",48-65,false,18,6,logs
+      RingBufferSink.close,method,() -> None,67-70,false,4,1,stops
+      RingBufferSink.buffered,method,() -> int,73-75,false,3,1,Number of entries currently in the ring buffer.
+      RingBufferSink.flush_count,method,() -> int,78-80,false,3,1,Number of times the buffer has been flushed (error events seen).
+      RingBufferSink.capacity,method,() -> int,83-85,false,3,2,Maximum ring buffer size.
   nfo/__main__.py:
     functions[9]{name,kind,sig,loc,async,lines,cc,does}:
       _setup_logger,function,"(sink_specs:list[str], env:Any=None)",26-43,false,18,3,Build nfo Logger from CLI sink specs.
@@ -270,6 +516,17 @@ function_details:
       _detect_language,function,"(cmd:str) -> str",332-353,false,22,11,Guess language from command name.
       _parse_duration,function,"(spec:str) -> float",356-365,false,10,4,"Parse duration like '24h', '30m', '7d' to hours."
       main,function,(),368-441,false,74,7,main
+  nfo/meta.py:
+    functions[3]{name,kind,sig,loc,async,lines,cc,does}:
+      sizeof,function,"(obj:Any) -> int",52-63,false,12,5,Best-effort size of *obj* in bytes.
+      ThresholdPolicy.should_extract_meta,method,"(value:Any) -> bool",24-40,false,17,9,Return True if *value* should be represented as metadata.
+      ThresholdPolicy.should_extract_return_meta,method,"(value:Any) -> bool",42-49,false,8,1,"Like :meth:`should_extract_meta` but uses ``max_return_bytes``."
+  nfo/binary_router.py:
+    functions[4]{name,kind,sig,loc,async,lines,cc,does}:
+      BinaryAwareRouter.__init__,method,"(lightweight_sink:Sink, full_sink:Sink, heavy_sink:Optional[Sink]=None, size_threshold:int=65536) -> None",26-36,false,11,1,creates
+      BinaryAwareRouter.write,method,"(entry:LogEntry) -> None",38-44,false,7,4,logs
+      BinaryAwareRouter._has_large_data,method,"(entry:LogEntry) -> bool",46-55,false,10,7,has large data
+      BinaryAwareRouter.close,method,() -> None,57-61,false,5,2,stops
   nfo/models.py:
     functions[7]{name,kind,sig,loc,async,lines,cc,does}:
       _truncate_text,function,"(text:str, max_length:Optional[int]) -> str",13-20,false,8,4,Truncate text representation to a bounded length (if configured).
@@ -280,17 +537,30 @@ function_details:
       LogEntry.return_value_repr,method,() -> str,67-68,false,2,1,return value repr
       LogEntry.as_dict,method,"() -> Dict[str, Any]",70-91,false,22,9,Convert to a flat dictionary suitable for serialization.
   nfo/decorators.py:
-    functions[10]{name,kind,sig,loc,async,lines,cc,does}:
-      _get_default_logger,function,() -> Any,22-27,false,6,2,retrieves default logger
-      set_default_logger,function,"(logger:Any) -> None",30-33,false,4,1,Replace the module-level default logger used by decorators.
-      _arg_types,function,"(args:tuple, kwargs:dict) -> tuple",40-43,false,4,3,arg types
-      _module_of,function,"(func:Callable) -> str",46-47,false,2,2,module of
-      log_call,function,"(func:F) -> F",55-55,false,1,1,logs call
-      log_call,function,"() -> Callable[[F], F]",58-63,false,6,1,logs call
-      log_call,function,"(func:Optional[F]=None) -> Any",65-185,false,121,2,Decorator that automatically logs function calls.
-      catch,function,"(func:F) -> F",193-193,false,1,1,catch
-      catch,function,"() -> Callable[[F], F]",196-202,false,7,1,catch
-      catch,function,"(func:Optional[F]=None) -> Any",204-313,false,110,2,Decorator that logs calls **and** suppresses exceptions.
+    functions[12]{name,kind,sig,loc,async,lines,cc,does}:
+      _get_default_logger,function,() -> Any,23-28,false,6,2,retrieves default logger
+      set_default_logger,function,"(logger:Any) -> None",31-34,false,4,1,Replace the module-level default logger used by decorators.
+      _arg_types,function,"(args:tuple, kwargs:dict) -> tuple",41-44,false,4,3,arg types
+      _module_of,function,"(func:Callable) -> str",47-48,false,2,2,module of
+      _should_sample,function,"(sample_rate:Optional[float]) -> bool",51-62,false,12,4,Return True if this call should be logged based on *sample_rate*.
+      _maybe_extract,function,"(args:tuple, kwargs:dict, result:Any, extract_meta_flag:bool, meta_policy:Any) -> Optional[Dict[str, Any]]",65-107,false,43,13,Build ``extra`` dict with metadata when *extract_meta_flag* is True.
+      log_call,function,"(func:F) -> F",115-115,false,1,1,logs call
+      log_call,function,"() -> Callable[[F], F]",118-126,false,9,1,logs call
+      log_call,function,"(func:Optional[F]=None) -> Any",128-274,false,147,2,Decorator that automatically logs function calls.
+      catch,function,"(func:F) -> F",282-282,false,1,1,catch
+      catch,function,"() -> Callable[[F], F]",285-294,false,10,1,catch
+      catch,function,"(func:Optional[F]=None) -> Any",296-424,false,129,2,Decorator that logs calls **and** suppresses exceptions.
+  nfo/terminal.py:
+    functions[9]{name,kind,sig,loc,async,lines,cc,does}:
+      TerminalSink.__init__,method,"(format:str='color', stream:Optional[TextIO]=None, show_args:bool=True, show_return:bool=True, show_duration:bool=True, show_traceback:bool=True, max_width:int=120)",35-54,false,20,2,creates
+      TerminalSink.format,method,() -> str,57-58,false,2,1,formats
+      TerminalSink.write,method,"(entry:LogEntry) -> None",60-72,false,13,2,logs
+      TerminalSink._write_ascii,method,"(entry:LogEntry) -> None",74-86,false,13,8,Classic single-line format.
+      TerminalSink._write_color,method,"(entry:LogEntry) -> None",88-125,false,38,13,ANSI colored format — replaces typical CLI logs.
+      TerminalSink._write_markdown,method,"(entry:LogEntry) -> None",127-162,false,36,12,Markdown format — rendered via rich or written as plain text.
+      TerminalSink._write_toon,method,"(entry:LogEntry) -> None",164-219,false,56,24,"Compact TOON format — minimal, machine+human readable."
+      TerminalSink._write_table,method,"(entry:LogEntry) -> None",221-262,false,42,5,Tabular format via rich.table (fallback to ascii).
+      TerminalSink.close,method,() -> None,264-266,false,3,2,stops
   nfo/env.py:
     functions[14]{name,kind,sig,loc,async,lines,cc,does}:
       _detect_environment,function,() -> str,26-44,false,19,9,Auto-detect environment from common env vars.
@@ -307,6 +577,13 @@ function_details:
       DiffTracker._make_key,method,"(entry:LogEntry) -> str",196-199,false,4,1,creates key
       DiffTracker.write,method,"(entry:LogEntry) -> None",201-222,false,22,6,logs
       DiffTracker.close,method,() -> None,224-225,false,2,1,stops
+  nfo/meta_decorators.py:
+    functions[5]{name,kind,sig,loc,async,lines,cc,does}:
+      _extract_args_meta,function,"(args:tuple, param_names:list, policy:ThresholdPolicy, extract_fields:Optional[Dict[str,Callable]]=None) -> list",29-48,false,20,7,Build metadata list for positional arguments.
+      _extract_kwargs_meta,function,"(kwargs:dict, policy:ThresholdPolicy, extract_fields:Optional[Dict[str,Callable]]=None) -> dict",51-66,false,16,6,Build metadata dict for keyword arguments.
+      _extract_return_meta,function,"(value:Any, policy:ThresholdPolicy) -> Any",69-74,false,6,3,Build metadata for the return value.
+      _emit,function,"(entry:LogEntry, logger:Any) -> None",77-80,false,4,2,sends
+      meta_log,function,"(func:Optional[Callable]=None) -> Any",83-243,false,161,3,Decorator that logs metadata instead of raw binary data.
   nfo/prometheus.py:
     functions[5]{name,kind,sig,loc,async,lines,cc,does}:
       PrometheusSink.__init__,method,"(delegate:Optional[Sink]=None) -> None",51-101,false,51,4,creates
@@ -326,6 +603,13 @@ function_details:
       JSONSink.__init__,method,"(file_path:Any='logs.jsonl') -> None",38-48,false,11,1,creates
       JSONSink.write,method,"(entry:LogEntry) -> None",50-65,false,16,6,logs
       JSONSink.close,method,() -> None,67-69,false,3,2,stops
+  nfo/click.py:
+    functions[5]{name,kind,sig,loc,async,lines,cc,does}:
+      nfo_options,function,"(func:Any) -> Any",199-227,false,29,1,Decorator that adds common nfo CLI options to a Click command/group.
+      NfoGroup.__init__,method,() -> None,31-33,false,3,1,creates
+      NfoGroup.invoke,method,"(ctx:Any) -> Any",35-84,false,50,11,invoke
+      NfoGroup._resolve_logger,method,"(ctx:Any) -> Logger",86-111,false,26,4,Get or create the nfo Logger from Click context.
+      NfoCommand.invoke,method,"(ctx:Any) -> Any",125-196,false,72,11,invoke
   nfo/logger.py:
     functions[6]{name,kind,sig,loc,async,lines,cc,does}:
       Logger.__init__,method,"(name:str='nfo', level:str='DEBUG', sinks:Optional[List[Sink]]=None, propagate_stdlib:bool=True) -> None",22-45,false,24,4,creates
@@ -443,6 +727,22 @@ function_details:
       parse_payload,function,"(raw:str) -> dict",101-103,false,3,1,parses payload
       InventoryService.check_stock,method,"(item_id:str) -> int",108-109,false,2,1,checks stock
       InventoryService.reserve,method,"(item_id:str, qty:int) -> bool",111-114,false,4,2,reserve
+  examples/click-integration/demo_basic.py:
+    functions[5]{name,kind,sig,loc,async,lines,cc,does}:
+      cli,function,(),30-32,false,3,1,Demo CLI with automatic nfo logging.
+      greet,function,(name),37-39,false,3,1,Greet someone.
+      process,function,(count),44-49,false,6,2,Run a processing loop.
+      deploy,function,"(path, force)",55-62,false,8,2,Deploy to a target path.
+      fail,function,(),66-68,false,3,1,Command that fails (demonstrates error logging).
+  examples/click-integration/demo_configure.py:
+    functions[3]{name,kind,sig,loc,async,lines,cc,does}:
+      cli,function,(),26-28,false,3,1,Demo CLI using nfo.configure() with terminal sink.
+      deploy,function,"(target, force)",35-38,false,4,1,Deploy to target.
+      migrate,function,(db_path),44-47,false,4,1,Run database migration.
+  examples/click-integration/demo_formats.py:
+    functions[2]{name,kind,sig,loc,async,lines,cc,does}:
+      make_entry,function,"(function_name='deploy', args=('prod',), kwargs=None, return_value=None, duration_ms=2300.0, exception=None, exception_type=None)",15-38,false,24,4,creates entry
+      demo,function,(),41-67,false,27,2,demo
   examples/async-usage/main.py:
     functions[5]{name,kind,sig,loc,async,lines,cc,does}:
       setup_logger,function,() -> Logger,22-29,false,8,1,initializes logger

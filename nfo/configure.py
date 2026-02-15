@@ -45,6 +45,10 @@ def _parse_sink_spec(spec: str) -> Sink:
         return CSVSink(file_path=path)
     elif sink_type in ("md", "markdown"):
         return MarkdownSink(file_path=path)
+    elif sink_type == "terminal":
+        from nfo.terminal import TerminalSink
+        fmt = path if path in ("ascii", "color", "markdown", "toon", "table") else "color"
+        return TerminalSink(format=fmt)
     elif sink_type in ("json", "jsonl"):
         from nfo.json_sink import JSONSink
         return JSONSink(file_path=path)
@@ -54,7 +58,7 @@ def _parse_sink_spec(spec: str) -> Sink:
         return PrometheusSink(port=port)
     else:
         raise ValueError(
-            f"Unknown sink type '{sink_type}'. Supported: sqlite, csv, md, json, prometheus"
+            f"Unknown sink type '{sink_type}'. Supported: sqlite, csv, md, terminal, json, prometheus"
         )
 
 
