@@ -1,3 +1,24 @@
+## [0.2.14] - 2026-02-16
+
+### Summary
+
+feat(tests): configuration management system
+
+### Test
+
+- update tests/conftest.py
+- update tests/test_log_flow.py
+
+### Build
+
+- update pyproject.toml
+
+### Other
+
+- update nfo/__init__.py
+- update nfo/log_flow.py
+
+
 ## [0.2.13] - 2026-02-15
 
 ### Summary

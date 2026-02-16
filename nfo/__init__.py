@@ -22,6 +22,7 @@ from nfo.buffered_sink import AsyncBufferedSink
 from nfo.ring_buffer_sink import RingBufferSink
 from nfo.terminal import TerminalSink
 from nfo.pipeline_sink import PipelineSink
+from nfo.log_flow import LogFlowParser, build_log_flow_graph, compress_logs_for_llm
 
 # Lazy import for optional click dependency
 def _lazy_click():
@@ -70,6 +71,9 @@ __all__ = [
     "RingBufferSink",
     "TerminalSink",
     "PipelineSink",
+    "LogFlowParser",
+    "build_log_flow_graph",
+    "compress_logs_for_llm",
     "decision_log",
     "NfoGroup",
     "NfoCommand",
