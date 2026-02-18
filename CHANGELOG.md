@@ -1,3 +1,15 @@
+## [0.2.16] - 2026-02-18
+
+### Summary
+
+fix(nfo): deep code analysis engine with 5 supporting modules
+
+### Other
+
+- update nfo/__init__.py
+- update nfo/fastapi_middleware.py
+
+
 ## [0.2.15] - 2026-02-18
 
 ### Summary

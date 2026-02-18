@@ -37,10 +37,79 @@ def get_logger(name: str) -> _logging.Logger:
     return _logging.getLogger(name)
 
 
+def _direct_emit(level: str, message: str, **extra) -> None:
+    """
+    Log a plain message as a structured LogEntry without a decorator.
+
+    Emits directly to all configured nfo sinks.  Falls back to stdlib
+    logging when ``configure()`` has not been called yet.
+
+    Usage::
+
+        import nfo
+        nfo.configure(sinks=["sqlite:app.db"])
+        nfo.info("Server started", port=8888)
+        nfo.event("user.login", user_id=42, role="admin")
+    """
+    from nfo.configure import _last_logger
+    from nfo.models import LogEntry
+
+    if _last_logger is None:
+        _logging.getLogger("nfo").log(
+            getattr(_logging, level.upper(), _logging.INFO), message
+        )
+        return
+
+    entry = LogEntry(
+        timestamp=LogEntry.now(),
+        level=level.upper(),
+        function_name="nfo.event",
+        module="nfo",
+        args=(),
+        kwargs=extra,
+        arg_types=[],
+        kwarg_types={},
+        return_value=message,
+        return_type="str",
+        exception=None,
+        exception_type=None,
+        traceback=None,
+        duration_ms=None,
+        extra={"message": message, **extra},
+    )
+    _last_logger.emit(entry)
+
+
+def debug(message: str, **extra) -> None:
+    """Log a DEBUG-level event directly to nfo sinks."""
+    _direct_emit("DEBUG", message, **extra)
+
+
+def info(message: str, **extra) -> None:
+    """Log an INFO-level event directly to nfo sinks."""
+    _direct_emit("INFO", message, **extra)
+
+
+def warning(message: str, **extra) -> None:
+    """Log a WARNING-level event directly to nfo sinks."""
+    _direct_emit("WARNING", message, **extra)
+
+
+def error(message: str, **extra) -> None:
+    """Log an ERROR-level event directly to nfo sinks."""
+    _direct_emit("ERROR", message, **extra)
+
+
+def event(name: str, **extra) -> None:
+    """Log a named business event at INFO level with structured kwargs."""
+    _direct_emit("INFO", name, event=name, **extra)
+
+
 # Lazy import for optional click dependency
 def _lazy_click():
     from nfo.click import NfoGroup, NfoCommand, nfo_options
     return NfoGroup, NfoCommand, nfo_options
+
 
 # Lazy import for optional dependencies
 def __getattr__(name: str):
@@ -50,9 +119,12 @@ def __getattr__(name: str):
     if name in ("NfoGroup", "NfoCommand", "nfo_options"):
         from nfo import click as _click
         return getattr(_click, name)
+    if name == "FastAPIMiddleware":
+        from nfo.fastapi_middleware import FastAPIMiddleware
+        return FastAPIMiddleware
     raise AttributeError(f"module 'nfo' has no attribute {name!r}")
 
-__version__ = "0.2.15"
+__version__ = "0.2.16"
 
 __all__ = [
     "log_call",
@@ -92,4 +164,10 @@ __all__ = [
     "NfoGroup",
     "NfoCommand",
     "nfo_options",
+    "debug",
+    "info",
+    "warning",
+    "error",
+    "event",
+    "FastAPIMiddleware",
 ]
