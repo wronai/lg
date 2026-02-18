@@ -1,3 +1,16 @@
+## [0.2.15] - 2026-02-18
+
+### Summary
+
+feat(tests): multi-language support with 3 supporting modules
+
+### Other
+
+- update demo/tests/test_demo.py
+- update nfo/__init__.py
+- update nfo/tests/test_nfo.py
+
+
 ## [0.2.14] - 2026-02-16
 
 ### Summary

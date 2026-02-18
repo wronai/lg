@@ -23,6 +23,19 @@ from nfo.ring_buffer_sink import RingBufferSink
 from nfo.terminal import TerminalSink
 from nfo.pipeline_sink import PipelineSink
 from nfo.log_flow import LogFlowParser, build_log_flow_graph, compress_logs_for_llm
+import logging as _logging
+
+
+def get_logger(name: str) -> _logging.Logger:
+    """Return a stdlib logger bridged to nfo sinks via configure().
+
+    Drop-in replacement for ``logging.getLogger(name)``.  When
+    ``configure(modules=[...])`` has been called, the returned logger's
+    records are automatically forwarded to every configured nfo sink
+    (SQLite, CSV, …) through the :class:`_StdlibBridge` handler.
+    """
+    return _logging.getLogger(name)
+
 
 # Lazy import for optional click dependency
 def _lazy_click():
@@ -39,7 +52,7 @@ def __getattr__(name: str):
         return getattr(_click, name)
     raise AttributeError(f"module 'nfo' has no attribute {name!r}")
 
-__version__ = "0.3.0"
+__version__ = "0.2.15"
 
 __all__ = [
     "log_call",
@@ -74,6 +87,7 @@ __all__ = [
     "LogFlowParser",
     "build_log_flow_graph",
     "compress_logs_for_llm",
+    "get_logger",
     "decision_log",
     "NfoGroup",
     "NfoCommand",
